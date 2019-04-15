@@ -22,13 +22,15 @@ public class ConfirmBox {
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setTitle(title);
-        window.setMaxWidth(300);
-        window.setMaxHeight(300);
-        window.setMinWidth(300);
-        window.setMinHeight(300);
+        window.setMaxWidth(200);
+        window.setMaxHeight(100);
+        window.setMinWidth(200);
+        window.setMinHeight(100);
 
         Button yesButton = new Button("Yes");
         Button noButton = new Button("No");
+        StackPane.setMargin(yesButton, new Insets(0,100,0,0));
+        StackPane.setMargin(noButton, new Insets(0,0,0,100));
         yesButton.setOnAction(event -> {
             answer = true;
             window.close();
@@ -41,7 +43,7 @@ public class ConfirmBox {
         Label label = new Label(message);
         StackPane.setAlignment(label, Pos.TOP_CENTER);
 
-        VBox layout = new VBox(label, yesButton, noButton);
+        StackPane layout = new StackPane(label, yesButton, noButton);
         Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();

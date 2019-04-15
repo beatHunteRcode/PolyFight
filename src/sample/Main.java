@@ -2,10 +2,13 @@ package sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -41,14 +44,30 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         window = primaryStage;
-        window.setOnCloseRequest(event -> closeProgram());
 
-        StackPane.setAlignment(ruleButton, Pos.TOP_CENTER);
-        StackPane.setAlignment(playButton, Pos.CENTER);
-        StackPane.setAlignment(exitButton, Pos.BOTTOM_CENTER);
-        StackPane.setAlignment(backButton, Pos.BOTTOM_RIGHT);
+        //.setOnCloseRequest() обрабатывает случай, когда юзер закрывает
+        //приложение через красный виндоусовский крестик в правом перхнем углу окна
+        //перед тем как окно закроется. произойдет то, что будет в скобках
+        //!!!ОКНО ЗАКРОЕТСЯ В ЛЮБОМ СЛУЧАЕ. НЕВАЖНО КАКОЙ БУДЕТ РЕЗУЛЬТАТ!!!
+        //
+        //Эта проблема решается использованием метода consume()
+        //event.consume()
+        //Этот метод останавливает выполнение метода .setOnCloseRequest. Он как бы "поглощает" метод в котором он вызван
+        //Тем самым закроется окно или нет уже будет зависеть от другого метода
+        window.setOnCloseRequest(event -> {
+            event.consume();
+            closeProgram();
+        });
+
+        StackPane.setMargin(ruleButton, new Insets(0,0,300,0));
+        StackPane.setMargin(playButton, new Insets(0,0,0,0));
+        StackPane.setMargin(exitButton, new Insets(300,0,0,0));
+        StackPane.setMargin(backButton, new Insets(600,0,0,1150));
         StackPane.setAlignment(ruleLabel, Pos.CENTER);
+
+
         StackPane layout = new StackPane(ruleButton, playButton, exitButton);
+
         StackPane playLayout = new StackPane(backButton);
         StackPane ruleLayout = new StackPane(backButton, ruleLabel);
 
@@ -60,18 +79,14 @@ public class Main extends Application {
         ruleWindow = new Scene(ruleLayout, 1280, 720);
 
         ruleButton.setOnAction(event -> primaryStage.setScene(ruleWindow));
-        playButton.setOnAction(event -> {
-            boolean result = ConfirmBox.display("oaoaoa", "Флекксим?");
-            if (!result) primaryStage.close();
-        });
+        playButton.setOnAction(event -> primaryStage.setScene(playWindow));
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
+
     }
 
     private void closeProgram() {
-        System.out.println("File saved!");
-        window.close();
+        boolean answer = ConfirmBox.display("Closing", "Are you sure you want to quit?");
+        if (answer) window.close();
     }
-
-
 }

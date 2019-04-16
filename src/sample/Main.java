@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -42,9 +43,9 @@ public class Main extends Application {
     public static void main(String[] args) { launch(args); }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception {
+        Pane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         window = primaryStage;
-
         //.setOnCloseRequest() обрабатывает случай, когда юзер закрывает
         //приложение через красный виндоусовский крестик в правом перхнем углу окна
         //перед тем как окно закроется. произойдет то, что будет в скобках
@@ -58,7 +59,7 @@ public class Main extends Application {
             event.consume();
             closeProgram();
         });
-
+        //Вместо StackPane попробовать использовать GridPane
         StackPane.setMargin(ruleButton, new Insets(0,0,300,0));
         StackPane.setMargin(playButton, new Insets(0,0,0,0));
         StackPane.setMargin(exitButton, new Insets(300,0,0,0));
@@ -83,6 +84,9 @@ public class Main extends Application {
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
 
+        GridPane grid = new GridPane();
+
+        //чтобы обрабатывать несколько нажатий нужно ставит true/false после обрабатывания клвиши методом .getKey();
     }
 
     private void closeProgram() {

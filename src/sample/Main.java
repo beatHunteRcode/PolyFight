@@ -7,12 +7,15 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 
 public class Main extends Application {
@@ -39,10 +42,12 @@ public class Main extends Application {
     private Scene playWindow;
     private Scene ruleWindow;
 
+
+
     public static void main(String[] args) { launch(args); }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws FileNotFoundException {
         window = primaryStage;
 
         //.setOnCloseRequest() обрабатывает случай, когда юзер закрывает
@@ -65,10 +70,14 @@ public class Main extends Application {
         StackPane.setMargin(backButton, new Insets(600,0,0,1150));
         StackPane.setAlignment(ruleLabel, Pos.CENTER);
 
+        Image arenaImage = new Image(new FileInputStream("./images/arena.jpg"));
+        Image playerImage = new Image(new FileInputStream("./images/player.png"));
+        ImageView arenaView = new ImageView(arenaImage);
+        ImageView playerView = new ImageView(playerImage);
 
         StackPane layout = new StackPane(ruleButton, playButton, exitButton);
 
-        StackPane playLayout = new StackPane(backButton);
+        StackPane playLayout = new StackPane(backButton, arenaView, playerView);
         StackPane ruleLayout = new StackPane(backButton, ruleLabel);
 
         mainMenu = new Scene(layout, 1280, 720);
@@ -82,6 +91,7 @@ public class Main extends Application {
         playButton.setOnAction(event -> primaryStage.setScene(playWindow));
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
+
 
     }
 

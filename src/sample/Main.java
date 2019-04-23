@@ -9,13 +9,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Material;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class Main extends Application {
@@ -47,9 +53,9 @@ public class Main extends Application {
     public static void main(String[] args) { launch(args); }
 
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException {
+    public void start(Stage primaryStage) throws IOException {
+        Pane root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         window = primaryStage;
-
         //.setOnCloseRequest() обрабатывает случай, когда юзер закрывает
         //приложение через красный виндоусовский крестик в правом перхнем углу окна
         //перед тем как окно закроется. произойдет то, что будет в скобках
@@ -92,7 +98,15 @@ public class Main extends Application {
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
 
+        Player player = new Player(playerView);
+        playWindow.setOnKeyPressed(key -> {
+            KeyCode keyCode = key.getCode();
+            if (keyCode.equals(KeyCode.W)) playerView.setX(1);
+            if (keyCode.equals(KeyCode.A)) player.move(-1, 0);
+            if (keyCode.equals(KeyCode.S)) player.move(0, -1);
+            if (keyCode.equals(KeyCode.D)) player.move(1, 0);
 
+        });
     }
 
     private void closeProgram() {

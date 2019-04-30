@@ -100,6 +100,9 @@ public class Main extends Application {
 
     private void closeProgram() {
         boolean answer = ConfirmBox.display("Closing", "Are you sure you want to quit?");
-        if (answer) window.close();
+        if (answer) {
+            window.close();
+            System.exit(0);
+        }
     }
 }

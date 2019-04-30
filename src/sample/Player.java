@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 
 
@@ -13,8 +14,8 @@ public class Player {
     }
 
     public void move(double x, double y) {
-       playerView.setLayoutX(playerView.getLayoutX() + x);
-       playerView.setLayoutY(playerView.getLayoutY() + y);
+        Platform.runLater(() -> playerView.setLayoutX(playerView.getLayoutX() + x));
+        Platform.runLater(() -> playerView.setLayoutY(playerView.getLayoutY() + y));
     }
 
 }

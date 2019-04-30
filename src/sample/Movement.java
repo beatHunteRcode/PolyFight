@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
+import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,7 +18,6 @@ public class Movement {
     private boolean isLeftPressed = false;
     private boolean isDownPressed = false;
     private boolean isRightPressed = false;
-    private boolean falling = false;
 
     Scene playScene;
     ImageView redPlayerView;
@@ -48,8 +48,6 @@ public class Movement {
             if (keyCode.equals(KeyCode.LEFT)) isLeftPressed = true;
             if (keyCode.equals(KeyCode.DOWN)) isDownPressed = true;
             if (keyCode.equals(KeyCode.RIGHT)) isRightPressed = true;
-
-            if (keyCode.equals(KeyCode.SPACE)) falling = true;
         });
 
         playScene.setOnKeyReleased (key -> {
@@ -72,9 +70,9 @@ public class Movement {
             @Override
             public void run() {
                 if (isWPressed) redPlayer.move(0.0, -1.0);
-                else if (isAPressed) redPlayer.move(-1.0, 0.0);
-                else if (isSPressed) redPlayer.move(0.0, 1.0);
-                else if (isDPressed) redPlayer.move(1.0, 0.0);
+                if (isAPressed) redPlayer.move(-1.0, 0.0);
+                if (isSPressed) redPlayer.move(0.0, 1.0);
+                if (isDPressed) redPlayer.move(1.0, 0.0);
 
                 if (isUpPressed) greenPlayer.move(0.0, -1.0);
                 if (isLeftPressed) greenPlayer.move(-1.0,0.0);
@@ -83,8 +81,12 @@ public class Movement {
 
             }
         };
-
+        //volitile check
+        //чекнуть многопотомчне программирование для решения проблемы с курсором
+        //скачать scene builder с oracle
+        //
         timer.schedule(timerTask, 0, 3);
+
     }
 
 

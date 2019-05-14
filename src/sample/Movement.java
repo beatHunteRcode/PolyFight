@@ -66,10 +66,19 @@ public class Movement {
         Player redPlayer = new Player(redPlayerView);
         Player greenPlayer = new Player(greenPlayerView);
         Timer timer = new Timer();
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if (isWPressed) redPlayer.move(0.0, -1.0);
+
+                double v = 10;
+                double a = 0.5;
+                //время брать из периода таймера (period: 3)
+                int t = 3;
+
+                if (isWPressed ) {
+                    //v0 + (at^2)/2
+                }
                 if (isAPressed) redPlayer.move(-1.0, 0.0);
                 if (isSPressed) redPlayer.move(0.0, 1.0);
                 if (isDPressed) redPlayer.move(1.0, 0.0);
@@ -81,6 +90,8 @@ public class Movement {
 
             }
         };
+
+
         //volitile check
         //чекнуть многопотомчне программирование для решения проблемы с курсором
         //скачать scene builder с oracle

@@ -18,4 +18,12 @@ public class Player {
         Platform.runLater(() -> playerView.setLayoutY(playerView.getLayoutY() + y));
     }
 
+    public void jumpUp() {
+        Platform.runLater(() -> playerView.setLayoutY(playerView.getLayoutY() - 5));
+    }
+
+    public void jumpDown() {
+        Platform.runLater(() -> playerView.setLayoutY(playerView.getLayoutY() + 5));
+    }
+
 }

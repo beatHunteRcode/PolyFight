@@ -1,9 +1,16 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Rectangle;
 
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,6 +29,8 @@ public class Movement {
     Scene playScene;
     ImageView redPlayerView;
     ImageView greenPlayerView;
+
+    Main main = new Main();
 
     public Movement(Scene playScene, ImageView redPlayerView, ImageView greenPlayerView) {
         this.playScene = playScene;
@@ -65,40 +74,69 @@ public class Movement {
 
         Player redPlayer = new Player(redPlayerView);
         Player greenPlayer = new Player(greenPlayerView);
-        Timer timer = new Timer();
 
-        TimerTask timerTask = new TimerTask() {
+        AnimationTimer timer = new AnimationTimer() {
             @Override
-            public void run() {
-
-                double v = 10;
-                double a = 0.5;
+            public void handle(long now) {
+                double velocity = 5;
+                double a = 0.2;
                 //время брать из периода таймера (period: 3)
-                int t = 3;
+                int time = 3;
 
-                if (isWPressed ) {
-                    //v0 + (at^2)/2
+                if (isWPressed && redPlayerView.getY() > 0) redPlayer.move(0.0, -5.0);
+                if (isAPressed && redPlayerView.getX() > 0) redPlayer.move(-5.0, 0.0);
+                if (isSPressed && redPlayerView.getY() < 600) redPlayer.move(0.0, 5.0);
+                if (isDPressed && redPlayerView.getX() < 1240) redPlayer.move(5.0, 0.0);
+
+                if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.move(0.0, -5.0);
+                else if (isLeftPressed && greenPlayerView.getX() > 0) greenPlayer.move(-5.0,0.0);
+                if (isDownPressed && greenPlayerView.getY() < 600) greenPlayer.move(0.0, 5.0);
+                if (isRightPressed && greenPlayerView.getX() < 1240) greenPlayer.move(5.0, 0.0);
+
+                if (redPlayer.velocity.getY() < 10){
+                    redPlayer.velocity = redPlayer.velocity.add(0, 2);
                 }
-                if (isAPressed) redPlayer.move(-1.0, 0.0);
-                if (isSPressed) redPlayer.move(0.0, 1.0);
-                if (isDPressed) redPlayer.move(1.0, 0.0);
 
-                if (isUpPressed) greenPlayer.move(0.0, -1.0);
-                if (isLeftPressed) greenPlayer.move(-1.0,0.0);
-                if (isDownPressed) greenPlayer.move(0.0, 1.0);
-                if (isRightPressed) greenPlayer.move(1.0, 0.0);
+                moveX(redPlayerView.getX(), redPlayerView);
+                moveY(redPlayerView.getY(), redPlayerView);
+                try {
+                    ImageView playerView = new ImageView(new Image(new FileInputStream("./images/redPlayer.png")));
+                    //System.out.println(box.isIntersect(playerView));
+                }
+                catch (Exception exception) {
+                    System.err.println("Picture not found!");
+                }
+
 
             }
         };
-
+        timer.start();
 
         //volitile check
         //чекнуть многопотомчне программирование для решения проблемы с курсором
         //скачать scene builder с oracle
         //
-        timer.schedule(timerTask, 0, 3);
+
+
 
     }
 
-
+    public void moveX(double x, ImageView playerView) {
+        for (int i = 0; i < x; i++) {
+            for (Rectangle platform: main.platforms) {
+                if (platform.getX() == platform.getX()) {
+                    return;
+                }
+            }
+        }
+    }
+    public void moveY(double y, ImageView playerView) {
+        for (int i = 0; i < y; i++) {
+            for (Rectangle platform: main.platforms) {
+                if (playerView.getY() > platform.getY()) {
+                    playerView.setX(0);
+                }
+            }
+        }
+    }
 }

@@ -8,14 +8,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 
 
 public class Main extends Application {
@@ -41,6 +42,9 @@ public class Main extends Application {
     private Scene mainMenu;
     private Scene playScene;
     private Scene ruleWindow;
+    private Pane playLayout = new Pane();
+
+    public ArrayList<Rectangle> platforms = new ArrayList<>();
 
 
 
@@ -70,17 +74,22 @@ public class Main extends Application {
         StackPane.setMargin(backButton, new Insets(600,0,0,1150));
         StackPane.setAlignment(ruleLabel, Pos.CENTER);
 
-        Image arenaImage = new Image(new FileInputStream("./images/arena.jpg"));
         Image redPlayerImage = new Image(new FileInputStream("./images/redPlayer.png"));
         Image greenPlayerImage = new Image(new FileInputStream("./images/greenPlayer.png"));
+        Image groundImage = new Image(new FileInputStream("./images/ground.png"));
+        Image skyImage = new Image(new FileInputStream("./images/sky.jpg"));
+        Image boxImage = new Image(new FileInputStream("./images/box.jpg"));
 
-        ImageView arenaView = new ImageView(arenaImage);
         ImageView redPlayerView = new ImageView(redPlayerImage);
         ImageView greenPlayerView = new ImageView(greenPlayerImage);
+        ImageView skyView = new ImageView(skyImage);
+        ImagePattern groundPattern = new ImagePattern(groundImage);
+        ImagePattern boxPattern = new ImagePattern(boxImage);
 
         StackPane layout = new StackPane(ruleButton, playButton, exitButton);
 
-        Pane playLayout = new Pane(backButton, arenaView, redPlayerView, greenPlayerView);
+
+        playLayout.getChildren().addAll(backButton, skyView, redPlayerView, greenPlayerView);
         StackPane ruleLayout = new StackPane(backButton, ruleLabel);
 
         mainMenu = new Scene(layout, 1280, 720);
@@ -97,6 +106,10 @@ public class Main extends Application {
 
         Movement movement = new Movement(playScene, redPlayerView, greenPlayerView);
         movement.start();
+
+        createLevel(groundPattern, boxPattern);
+
+
     }
 
     private void closeProgram() {
@@ -105,6 +118,32 @@ public class Main extends Application {
             window.close();
             System.exit(0);
         }
+    }
+
+    private void createLevel(ImagePattern groundPattern, ImagePattern boxPattern) {
+        for (int i = 0; i < Levels.LEVEL01.length; i++) {
+            String line = Levels.LEVEL01[i];
+           for (int j = 0; j < Levels.LEVEL01[i].length(); j++) {
+                switch (line.charAt(j)) {
+                    case '0':
+                        break;
+                    case '1':
+                        Box platform = createBox(j * 40, i * 40, 40, 40, groundPattern);
+                        platforms.add(platform);
+                        break;
+                    case '2':
+                        Box box = createBox(j * 40, i * 40, 40, 40, boxPattern);
+                }
+           }
+        }
+    }
+
+    public Box createBox(int x, int y, int width, int height, ImagePattern texture) {
+        Box box = new Box(width, height, texture);
+        box.setX(x);
+        box.setY(y);
+        playLayout.getChildren().add(box);
+        return box;
     }
 
 }

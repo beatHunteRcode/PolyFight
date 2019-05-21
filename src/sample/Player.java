@@ -18,11 +18,27 @@ public class Player extends Rectangle {
     ImageView playerView;
     private boolean canJump = true;
     Point2D velocity = new Point2D(0, 0);
-
+    private boolean canMove = true;
 
     public Player (ImageView playerView){
         this.playerView = playerView;
 
+    }
+
+    public void setCanMove(boolean canMove) {
+        this.canMove = canMove;
+    }
+
+    public boolean isCanMove() {
+        return canMove;
+    }
+
+    public double getPlayerViewX() {
+        return playerView.getX();
+    }
+
+    public double getPlayerViewY() {
+        return playerView.getY();
     }
 
     public ImageView getPlayerView() {

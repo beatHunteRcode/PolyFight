@@ -24,10 +24,12 @@ public class Box extends Rectangle {
         this.texture = texture;
     }
 
-    public boolean isIntersect(ImageView playerView) {
-        Player player = new Player(playerView);
-        return  this.getX() == player.getX() &&
-                this.getY() == player.getY();
+    public double getBoxViewX() {
+        return texture.getX();
+    }
+
+    public double getBoxViewY() {
+        return texture.getY();
     }
 
 }

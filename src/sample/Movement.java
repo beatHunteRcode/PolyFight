@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,10 +9,6 @@ import javafx.scene.shape.Rectangle;
 
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Movement {
 
@@ -83,19 +78,31 @@ public class Movement {
                 //время брать из периода таймера (period: 3)
                 int time = 3;
 
-                if (isWPressed && redPlayerView.getY() > 0) redPlayer.move(0.0, -5.0);
-                if (isAPressed && redPlayerView.getX() > 0) redPlayer.move(-5.0, 0.0);
-                if (isSPressed && redPlayerView.getY() < 600) redPlayer.move(0.0, 5.0);
-                if (isDPressed && redPlayerView.getX() < 1240) redPlayer.move(5.0, 0.0);
 
-                if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.move(0.0, -5.0);
-                else if (isLeftPressed && greenPlayerView.getX() > 0) greenPlayer.move(-5.0,0.0);
-                if (isDownPressed && greenPlayerView.getY() < 600) greenPlayer.move(0.0, 5.0);
-                if (isRightPressed && greenPlayerView.getX() < 1240) greenPlayer.move(5.0, 0.0);
+                for(Box box : Main.PLATFORMS) {
+                    if (isIntersect(redPlayer, box)) redPlayer.setCanMove(false);
+                    else redPlayer.setCanMove(true);
+                }
+
+                if (isWPressed && redPlayerView.getY() > 0 && redPlayer.isCanMove()) redPlayer.move(0.0, -5.0);
+                if (isAPressed && redPlayerView.getX() > 0 && redPlayer.isCanMove()) redPlayer.move(-5.0, 0.0);
+                if (isSPressed && redPlayerView.getY() < 600 && redPlayer.isCanMove()) redPlayer.move(0.0, 5.0);
+                if (isDPressed && redPlayerView.getX() < 1240 && redPlayer.isCanMove()) redPlayer.move(5.0, 0.0);
+
+                for(Box box : Main.PLATFORMS) {
+                    if (isIntersect(greenPlayer, box)) greenPlayer.setCanMove(false);
+                    else greenPlayer.setCanMove(true);
+                }
+
+                if (isUpPressed && greenPlayerView.getY() > 0 && greenPlayer.isCanMove()) greenPlayer.move(0.0, -5.0);
+                if (isLeftPressed && greenPlayerView.getX() > 0 && greenPlayer.isCanMove()) greenPlayer.move(-5.0, 0.0);
+                if (isDownPressed && greenPlayerView.getY() < 600 && greenPlayer.isCanMove()) greenPlayer.move(0.0, 5.0);
+                if (isRightPressed && greenPlayerView.getX() < 1240 && greenPlayer.isCanMove()) greenPlayer.move(5.0, 0.0);
 
                 if (redPlayer.velocity.getY() < 10){
                     redPlayer.velocity = redPlayer.velocity.add(0, 2);
                 }
+
 
                 moveX(redPlayerView.getX(), redPlayerView);
                 moveY(redPlayerView.getY(), redPlayerView);
@@ -123,7 +130,7 @@ public class Movement {
 
     public void moveX(double x, ImageView playerView) {
         for (int i = 0; i < x; i++) {
-            for (Rectangle platform: main.platforms) {
+            for (Rectangle platform: main.PLATFORMS) {
                 if (platform.getX() == platform.getX()) {
                     return;
                 }
@@ -132,11 +139,16 @@ public class Movement {
     }
     public void moveY(double y, ImageView playerView) {
         for (int i = 0; i < y; i++) {
-            for (Rectangle platform: main.platforms) {
+            for (Rectangle platform: main.PLATFORMS) {
                 if (playerView.getY() > platform.getY()) {
                     playerView.setX(0);
                 }
             }
         }
+    }
+
+    public boolean isIntersect(Player player, Box box) {
+        return  player.getPlayerViewX() == box.getBoxViewX() &&
+                player.getPlayerViewY() == box.getBoxViewY();
     }
 }

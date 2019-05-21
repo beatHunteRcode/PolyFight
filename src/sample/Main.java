@@ -11,7 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
@@ -44,7 +43,7 @@ public class Main extends Application {
     private Scene ruleWindow;
     private Pane playLayout = new Pane();
 
-    public ArrayList<Rectangle> platforms = new ArrayList<>();
+    public static final ArrayList<Box> PLATFORMS = new ArrayList<>();
 
 
 
@@ -129,7 +128,7 @@ public class Main extends Application {
                         break;
                     case '1':
                         Box platform = createBox(j * 40, i * 40, 40, 40, groundPattern);
-                        platforms.add(platform);
+                        PLATFORMS.add(platform);
                         break;
                     case '2':
                         Box box = createBox(j * 40, i * 40, 40, 40, boxPattern);

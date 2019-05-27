@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -27,25 +28,23 @@ public class Main extends Application {
     private Button backButton = new Button("Back");
     private Label ruleLabel = new Label("Kill your opponent!\n\n\n" +
             "Movement for 1st player:\n" +
-                                    "W - jump\n" +
-                                    "A - left\n" +
-                                    "S - down\n" +
-                                    "D - right\n\n" +
+            "W - jump\n" +
+            "A - left\n" +
+//            "S - down\n" +
+            "D - right\n\n" +
             "Movement for 2nd player:\n" +
-                                    "Up Arrow - jump\n" +
-                                    "Left Arrow - left\n" +
-                                    "Down Arrow - down\n" +
-                                    "Right Arrow - right\n\n\n" +
+            "Up Arrow - jump\n" +
+            "Left Arrow - left\n" +
+//            "Down Arrow - down\n" +
+            "Right Arrow - right\n\n\n" +
             "GL HF!!!");
 
     private Scene mainMenu;
     private Scene playScene;
     private Scene ruleWindow;
-    private Pane playLayout = new Pane();
+    public static Pane playLayout = new Pane();
 
-    public static final ArrayList<Box> PLATFORMS = new ArrayList<>();
-
-
+    public static final ArrayList<Box> OBSTACLES = new ArrayList<>();
 
     public static void main(String[] args) { launch(args); }
 
@@ -57,7 +56,6 @@ public class Main extends Application {
            приложение через красный виндоусовский крестик в правом перхнем углу окна
            перед тем как окно закроется. произойдет то, что будет в скобках
            !!!ОКНО ЗАКРОЕТСЯ В ЛЮБОМ СЛУЧАЕ. НЕВАЖНО КАКОЙ БУДЕТ РЕЗУЛЬТАТ!!!
-
            Эта проблема решается использованием метода consume()
            event.consume()
            Этот метод останавливает выполнение метода .setOnCloseRequest. Он как бы "поглощает" метод в котором он вызван
@@ -66,6 +64,11 @@ public class Main extends Application {
             event.consume();
             closeProgram();
         });
+
+        window.setMinWidth(1280);
+        window.setMinHeight(720);
+        window.setMaxWidth(1280);
+        window.setMaxHeight(720);
 
         StackPane.setMargin(ruleButton, new Insets(0,0,300,0));
         StackPane.setMargin(playButton, new Insets(0,0,0,0));
@@ -79,14 +82,17 @@ public class Main extends Application {
         Image skyImage = new Image(new FileInputStream("./images/sky.jpg"));
         Image boxImage = new Image(new FileInputStream("./images/box.jpg"));
 
+
         ImageView redPlayerView = new ImageView(redPlayerImage);
         ImageView greenPlayerView = new ImageView(greenPlayerImage);
         ImageView skyView = new ImageView(skyImage);
         ImagePattern groundPattern = new ImagePattern(groundImage);
         ImagePattern boxPattern = new ImagePattern(boxImage);
 
-        StackPane layout = new StackPane(ruleButton, playButton, exitButton);
+        redPlayerView.setViewport(new Rectangle2D(0,0, 190, 195));
+        greenPlayerView.setViewport(new Rectangle2D(0,195, 180, 195));
 
+        StackPane layout = new StackPane(ruleButton, playButton, exitButton);
 
         playLayout.getChildren().addAll(backButton, skyView, redPlayerView, greenPlayerView);
         StackPane ruleLayout = new StackPane(backButton, ruleLabel);
@@ -108,7 +114,6 @@ public class Main extends Application {
 
         createLevel(groundPattern, boxPattern);
 
-
     }
 
     private void closeProgram() {
@@ -122,18 +127,20 @@ public class Main extends Application {
     private void createLevel(ImagePattern groundPattern, ImagePattern boxPattern) {
         for (int i = 0; i < Levels.LEVEL01.length; i++) {
             String line = Levels.LEVEL01[i];
-           for (int j = 0; j < Levels.LEVEL01[i].length(); j++) {
+            for (int j = 0; j < Levels.LEVEL01[i].length(); j++) {
                 switch (line.charAt(j)) {
                     case '0':
                         break;
                     case '1':
-                        Box platform = createBox(j * 40, i * 40, 40, 40, groundPattern);
-                        PLATFORMS.add(platform);
+                        Box platform = createBox(j * 80, i * 80, 80, 80, groundPattern);
+                        OBSTACLES.add(platform);
                         break;
                     case '2':
-                        Box box = createBox(j * 40, i * 40, 40, 40, boxPattern);
+                        Box box = createBox(j * 80, i * 80, 80, 80, boxPattern);
+                        OBSTACLES.add(box);
+                        break;
                 }
-           }
+            }
         }
     }
 

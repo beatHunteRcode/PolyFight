@@ -10,6 +10,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 public class Movement {
 
@@ -25,6 +26,8 @@ public class Movement {
     private Scene playScene;
     private ImageView redPlayerView;
     private ImageView greenPlayerView;
+
+    ArrayList<Bullet> bullets = new ArrayList<>();
 
     public Movement(Scene playScene, ImageView redPlayerView, ImageView greenPlayerView) {
         this.playScene = playScene;
@@ -108,6 +111,7 @@ public class Movement {
                     if (greenPlayer.isMovingRight) greenPlayerView.setViewport(new Rectangle2D(180,0, 180, 195));
                     if (greenPlayer.isMovingLeft) greenPlayerView.setViewport(new Rectangle2D(185, 195, 180, 195));
                     playerShoot(greenPlayer);
+
                 }
                 if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
                 if (isLeftPressed && greenPlayerView.getX() > 0) {
@@ -128,6 +132,8 @@ public class Movement {
 
                 redPlayer.move(0.0, redPlayer.velocity.getY());
                 greenPlayer.move(0.0, greenPlayer.velocity.getY());
+
+                //попробовать ходить по списку и рисовать пулю каждый кадр
 
 //                moveX(redPlayerView.getX(), redPlayerView);
 //                moveY(redPlayerView.getY(), redPlayerView);
@@ -181,6 +187,7 @@ public class Movement {
     private void playerShoot(Player player) {
         try {
             Bullet bullet = new Bullet(new ImageView(new Image(new FileInputStream("./images/bullet.png"))));
+            bullets.add(bullet);
 
             ImageView bulletView = bullet.getBulletView();
             Main.playLayout.getChildren().add(bulletView);
@@ -200,10 +207,12 @@ public class Movement {
                 bulletView.setY(player.getPlayerViewY() + 35);
                 bullet.move(bullet.velocity.getX(), 0.0);
             }
+            bullets.remove(bullet);
         }
         catch (FileNotFoundException e) {
             System.err.println("File ./images/bullet.png didn't found");
         }
+
     }
 
 

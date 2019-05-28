@@ -27,16 +27,18 @@ public class Main extends Application {
     private Button exitButton = new Button("Exit");
     private Button backButton = new Button("Back");
     private Label ruleLabel = new Label("Kill your opponent!\n\n\n" +
-            "Movement for 1st player:\n" +
+            "Keys for 1st player:\n" +
             "W - jump\n" +
             "A - left\n" +
 //            "S - down\n" +
-            "D - right\n\n" +
-            "Movement for 2nd player:\n" +
+            "D - right\n" +
+            "SPACE - shoot\n\n" +
+            "Keys for 2nd player:\n" +
             "Up Arrow - jump\n" +
             "Left Arrow - left\n" +
 //            "Down Arrow - down\n" +
-            "Right Arrow - right\n\n\n" +
+            "Right Arrow - right\n" +
+            "ENTER - shoot\n\n\n" +
             "GL HF!!!");
 
     private Scene mainMenu;

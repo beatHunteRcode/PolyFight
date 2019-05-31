@@ -82,22 +82,19 @@ public class Movement {
             public void handle(long now) {
 
 
-                collisionObstaclesCheckY(redPlayer);
-
-                collisionObstaclesCheckX(greenPlayer);
-                collisionObstaclesCheckY(greenPlayer);
+                redPlayer.moveY(redPlayer.playerSpeedY);
+                greenPlayer.moveY(greenPlayer.playerSpeedY);
 
                 //movement for red player
                 if (isWPressed && redPlayerView.getY() > 0) redPlayer.jump();
                 if (isAPressed && redPlayerView.getX() > 0) {
-                    redPlayer.move(-Player.playerSpeedX, 0.0);
+                    redPlayer.moveX(-Player.playerSpeedX);
                     redPlayerView.setViewport(new Rectangle2D(0,195, 190, 195));
                     redPlayer.isMovingLeft = true;
                     redPlayer.isMovingRight = false;
                 }
                 if (isDPressed && redPlayerView.getX() < 1240) {
-                    redPlayer.move(Player.playerSpeedX, 0.0);
-                    collisionObstaclesCheckX(redPlayer);
+                    redPlayer.moveX(Player.playerSpeedX);
                     redPlayerView.setViewport(new Rectangle2D(0,0, 190, 195));
                     redPlayer.isMovingRight = true;
                     redPlayer.isMovingLeft = false;
@@ -111,13 +108,13 @@ public class Movement {
                 //movement for green player
                 if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
                 if (isLeftPressed && greenPlayerView.getX() > 0) {
-                    greenPlayer.move(-Player.playerSpeedX, 0.0);
+                    greenPlayer.moveX(-Player.playerSpeedX);
                     greenPlayerView.setViewport(new Rectangle2D(0,195, 180, 195));
                     greenPlayer.isMovingLeft = true;
                     greenPlayer.isMovingRight = false;
                 }
                 if (isRightPressed && greenPlayerView.getX() < 1240) {
-                    greenPlayer.move(Player.playerSpeedX, 0.0);
+                    redPlayer.moveX(Player.playerSpeedX);
                     greenPlayerView.setViewport(new Rectangle2D(0,0, 180, 195));
                     greenPlayer.isMovingRight = true;
                     greenPlayer.isMovingLeft = false;
@@ -136,8 +133,8 @@ public class Movement {
                 redPlayer.fall();
                 greenPlayer.fall();
 
-                redPlayer.move(0.0, redPlayer.velocity.getY());
-                greenPlayer.move(0.0, greenPlayer.velocity.getY());
+//                redPlayer.move(0.0, redPlayer.velocity.getY());
+//                greenPlayer.move(0.0, greenPlayer.velocity.getY());
 
 
 //                moveX(redPlayerView.getX(), redPlayerView);
@@ -166,81 +163,42 @@ public class Movement {
 
     }
 
-//    private void collisionObstaclesCheckX(Player player, double x) {
-//        boolean movingRight = x > 0;
-//
-//        for (int i = 0; i < Math.abs(x); i++) {
+
+
+
+//    public void collisionObstaclesCheckX(Player player) {
+//        for (int i = 0; i < Math.abs(Player.playerSpeedX); i++) {
 //            for (Box box : Main.OBSTACLES) {
 //                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
 //                    if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX()) {
-//                        player.move(-5.0, 0.0); // справа
+//                        player.getPlayerView().setX(player.getPlayerView().getX() - 1);  // справа
 //                        return;
 //                    }
 //                    if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
-//                        player.move(5.0, 0.0);  // слева
+//                        player.getPlayerView().setX(player.getPlayerView().getX() + 1);   // слева
 //                        return;
 //                    }
 //                }
 //            }
-////            player.getPlayerView().setX(player.getPlayerView().getX() + (movingRight ? 1 : -1));
 //        }
 //    }
-//    private void collisionObstaclesCheckY(Player player, double y) {
-//        boolean movingDown = y > 0;
-//        for (int i = 0; i < Math.abs(y); i++) {
+//    public void collisionObstaclesCheckY(Player player) {
+//        for (int i = 0; i < Player.playerSpeedY; i++) {
 //            for (Box box : Main.OBSTACLES) {
 //                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-//                    if (movingDown) {
-//                        if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
-//                            player.move(0.0, -5.0);  // сверху
-//                            player.setCanJump(true);
-//                            return;
-//                        }
-//                        else if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
-//                            player.move(0.0, 5.0);  //снизу
-//                            return;
-//                        }
+//                    if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
+//                        player.move(0.0, -Player.playerSpeedY);  // сверху
+//                        player.setCanJump(true);
+//                        return;
+//                    }
+//                    if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
+//                        player.move(0.0, Player.playerSpeedY);   //снизу
+//                        return;
 //                    }
 //                }
 //            }
-////            player.getPlayerView().setY(player.getPlayerView().getY() + (movingDown ? 1 : -1));
 //        }
 //    }
-
-
-    public void collisionObstaclesCheckX(Player player) {
-        for (int i = 0; i < Player.playerSpeedX; i++) {
-            for (Box box : Main.OBSTACLES) {
-                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                    if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX()) {
-                        player.move(-Player.playerSpeedX, 0.0);  // справа
-                        return;
-                    }
-                    if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
-                        player.move(Player.playerSpeedX, 0.0);   // слева
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    public void collisionObstaclesCheckY(Player player) {
-        for (int i = 0; i < Player.playerSpeedY; i++) {
-            for (Box box : Main.OBSTACLES) {
-                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                    if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
-                        player.move(0.0, -Player.playerSpeedY);  // сверху
-                        player.setCanJump(true);
-                        return;
-                    }
-                    if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
-                        player.move(0.0, Player.playerSpeedY);   //снизу
-                        return;
-                    }
-                }
-            }
-        }
-    }
 
 
     public void flyOfBullets(ArrayList<Bullet> bullets, Player player) {

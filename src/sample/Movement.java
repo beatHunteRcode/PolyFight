@@ -3,14 +3,11 @@ package sample;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.shape.Rectangle;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
 
 public class Movement {
 
@@ -27,7 +24,7 @@ public class Movement {
     private ImageView redPlayerView;
     private ImageView greenPlayerView;
 
-    ArrayList<Bullet> bullets = new ArrayList<>();
+
 
     public Movement(Scene playScene, ImageView redPlayerView, ImageView greenPlayerView) {
         this.playScene = playScene;
@@ -36,20 +33,22 @@ public class Movement {
     }
 
     public void start() {
-
         Player redPlayer = new Player(redPlayerView);
         Player greenPlayer = new Player(greenPlayerView);
 
+        ArrayList<Bullet> redPlayerBullets = redPlayer.getBullets();
+        ArrayList<Bullet> greenPlayerBullets = greenPlayer.getBullets();
+
         redPlayerView.setX(140);
         redPlayerView.setY(290);
-        redPlayerView.setFitHeight(100);
-        redPlayerView.setFitWidth(100);
+        redPlayerView.setFitHeight(70);
+        redPlayerView.setFitWidth(70);
         redPlayer.isMovingRight = true;
 
-        greenPlayerView.setX(1070);
+        greenPlayerView.setX(1100);
         greenPlayerView.setY(80);
-        greenPlayerView.setFitHeight(100);
-        greenPlayerView.setFitWidth(100);
+        greenPlayerView.setFitHeight(70);
+        greenPlayerView.setFitWidth(70);
         greenPlayer.isMovingLeft = true;
 
         playScene.setOnKeyPressed (key -> {
@@ -78,54 +77,61 @@ public class Movement {
             if (keyCode.equals(KeyCode.RIGHT)) isRightPressed = false;
         });
 
-
-        AnimationTimer timer = new AnimationTimer() {
+        AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
 
-                collisionObstaclesCheck(redPlayer);
-                collisionObstaclesCheck(greenPlayer);
+
+                collisionObstaclesCheckY(redPlayer);
+
+                collisionObstaclesCheckX(greenPlayer);
+                collisionObstaclesCheckY(greenPlayer);
 
                 //movement for red player
-                if (isSpacePressed) {
-                    if (redPlayer.isMovingRight) redPlayerView.setViewport(new Rectangle2D(190,0, 190, 195));
-                    if (redPlayer.isMovingLeft) redPlayerView.setViewport(new Rectangle2D(195,195, 185, 195));
-                    playerShoot(redPlayer);
-                }
                 if (isWPressed && redPlayerView.getY() > 0) redPlayer.jump();
                 if (isAPressed && redPlayerView.getX() > 0) {
-                    redPlayer.move(-5.0, 0.0);
+                    redPlayer.move(-Player.playerSpeedX, 0.0);
                     redPlayerView.setViewport(new Rectangle2D(0,195, 190, 195));
                     redPlayer.isMovingLeft = true;
                     redPlayer.isMovingRight = false;
                 }
                 if (isDPressed && redPlayerView.getX() < 1240) {
-                    redPlayer.move(5.0, 0.0);
+                    redPlayer.move(Player.playerSpeedX, 0.0);
+                    collisionObstaclesCheckX(redPlayer);
                     redPlayerView.setViewport(new Rectangle2D(0,0, 190, 195));
                     redPlayer.isMovingRight = true;
                     redPlayer.isMovingLeft = false;
                 }
+                if (isSpacePressed) {
+                    if (redPlayer.isMovingRight) redPlayerView.setViewport(new Rectangle2D(190,0, 190, 195));
+                    if (redPlayer.isMovingLeft) redPlayerView.setViewport(new Rectangle2D(195,195, 185, 195));
+                    redPlayer.shoot();
+                }
 
                 //movement for green player
-                if (isEnterPressed) {
-                    if (greenPlayer.isMovingRight) greenPlayerView.setViewport(new Rectangle2D(180,0, 180, 195));
-                    if (greenPlayer.isMovingLeft) greenPlayerView.setViewport(new Rectangle2D(185, 195, 180, 195));
-                    playerShoot(greenPlayer);
-
-                }
                 if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
                 if (isLeftPressed && greenPlayerView.getX() > 0) {
-                    greenPlayer.move(-5.0, 0.0);
+                    greenPlayer.move(-Player.playerSpeedX, 0.0);
                     greenPlayerView.setViewport(new Rectangle2D(0,195, 180, 195));
                     greenPlayer.isMovingLeft = true;
                     greenPlayer.isMovingRight = false;
                 }
                 if (isRightPressed && greenPlayerView.getX() < 1240) {
-                    greenPlayer.move(5.0, 0.0);
+                    greenPlayer.move(Player.playerSpeedX, 0.0);
                     greenPlayerView.setViewport(new Rectangle2D(0,0, 180, 195));
                     greenPlayer.isMovingRight = true;
                     greenPlayer.isMovingLeft = false;
                 }
+                if (isEnterPressed) {
+                    if (greenPlayer.isMovingRight) greenPlayerView.setViewport(new Rectangle2D(180,0, 180, 195));
+                    if (greenPlayer.isMovingLeft) greenPlayerView.setViewport(new Rectangle2D(185, 195, 180, 195));
+                    greenPlayer.shoot();
+                }
+
+                //--------------------Bullet Fly------------------------------
+                flyOfBullets(redPlayerBullets, redPlayer);
+                flyOfBullets(greenPlayerBullets, greenPlayer);
+                //------------------------------------------------------------
 
                 redPlayer.fall();
                 greenPlayer.fall();
@@ -133,7 +139,6 @@ public class Movement {
                 redPlayer.move(0.0, redPlayer.velocity.getY());
                 greenPlayer.move(0.0, greenPlayer.velocity.getY());
 
-                //попробовать ходить по списку и рисовать пулю каждый кадр
 
 //                moveX(redPlayerView.getX(), redPlayerView);
 //                moveY(redPlayerView.getY(), redPlayerView);
@@ -149,7 +154,8 @@ public class Movement {
 
             }
         };
-        timer.start();
+        animationTimer.start();
+
 
         //volitile check
         //чекнуть многопотомчне программирование для решения проблемы с курсором
@@ -160,65 +166,120 @@ public class Movement {
 
     }
 
-    private void collisionObstaclesCheck(Player player) {
-        for(Box box : Main.OBSTACLES) {
-            if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
-                    player.move(0.0, -5.0);  // сверху
-                    player.setCanJump(true);
-                    return;
+//    private void collisionObstaclesCheckX(Player player, double x) {
+//        boolean movingRight = x > 0;
+//
+//        for (int i = 0; i < Math.abs(x); i++) {
+//            for (Box box : Main.OBSTACLES) {
+//                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+//                    if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX()) {
+//                        player.move(-5.0, 0.0); // справа
+//                        return;
+//                    }
+//                    if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
+//                        player.move(5.0, 0.0);  // слева
+//                        return;
+//                    }
+//                }
+//            }
+////            player.getPlayerView().setX(player.getPlayerView().getX() + (movingRight ? 1 : -1));
+//        }
+//    }
+//    private void collisionObstaclesCheckY(Player player, double y) {
+//        boolean movingDown = y > 0;
+//        for (int i = 0; i < Math.abs(y); i++) {
+//            for (Box box : Main.OBSTACLES) {
+//                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+//                    if (movingDown) {
+//                        if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
+//                            player.move(0.0, -5.0);  // сверху
+//                            player.setCanJump(true);
+//                            return;
+//                        }
+//                        else if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
+//                            player.move(0.0, 5.0);  //снизу
+//                            return;
+//                        }
+//                    }
+//                }
+//            }
+////            player.getPlayerView().setY(player.getPlayerView().getY() + (movingDown ? 1 : -1));
+//        }
+//    }
+
+
+    public void collisionObstaclesCheckX(Player player) {
+        for (int i = 0; i < Player.playerSpeedX; i++) {
+            for (Box box : Main.OBSTACLES) {
+                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+                    if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX()) {
+                        player.move(-Player.playerSpeedX, 0.0);  // справа
+                        return;
+                    }
+                    if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
+                        player.move(Player.playerSpeedX, 0.0);   // слева
+                        return;
+                    }
                 }
-                if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX() ) {
-                    player.move(-5.0, 0.0);  // справа
-                    return;
-                }
-                if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
-                    player.move(5.0, 0.0);   // слева
-                    return;
-                }
-                if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
-                    player.move(0.0, 5.0);   //снизу
-                    return;
+            }
+        }
+    }
+    public void collisionObstaclesCheckY(Player player) {
+        for (int i = 0; i < Player.playerSpeedY; i++) {
+            for (Box box : Main.OBSTACLES) {
+                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+                    if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
+                        player.move(0.0, -Player.playerSpeedY);  // сверху
+                        player.setCanJump(true);
+                        return;
+                    }
+                    if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
+                        player.move(0.0, Player.playerSpeedY);   //снизу
+                        return;
+                    }
                 }
             }
         }
     }
 
-    private void playerShoot(Player player) {
-        try {
-            Bullet bullet = new Bullet(new ImageView(new Image(new FileInputStream("./images/bullet.png"))));
-            bullets.add(bullet);
 
-            ImageView bulletView = bullet.getBulletView();
-            Main.playLayout.getChildren().add(bulletView);
-            bulletView.setFitWidth(20);
-            bulletView.setFitHeight(8);
-
-
-            if (player.isMovingLeft) {
-                bulletView.setViewport(new Rectangle2D(0, 0, 48, 20));
-                bulletView.setX(player.getPlayerViewX() - 20);
-                bulletView.setY(player.getPlayerViewY() + 35);
-                bullet.move(-bullet.velocity.getX(), 0.0);
+    public void flyOfBullets(ArrayList<Bullet> bullets, Player player) {
+        if (!bullets.isEmpty()) {
+            for (int i = 0; i < bullets.size(); i++) {
+                Bullet bullet = bullets.get(i);
+                if (bullet.getBulletView().isVisible()) {
+                    bullet.move(player);
+                }
+                else bullets.remove(bullet);
             }
-            if (player.isMovingRight) {
-                bulletView.setViewport(new Rectangle2D(0, 20, 48, 20));
-                bulletView.setX(player.getPlayerViewX() + player.getPlayerView().getFitWidth());
-                bulletView.setY(player.getPlayerViewY() + 35);
-                bullet.move(bullet.velocity.getX(), 0.0);
-            }
-            bullets.remove(bullet);
         }
-        catch (FileNotFoundException e) {
-            System.err.println("File ./images/bullet.png didn't found");
-        }
-
     }
-
-
-
-
-
+//    private void playerShoot(Player player) {
+//            Bullet bullet = new Bullet(player.getPlayerViewX() - 20, player.getPlayerViewY() + 35);
+//            bullets.add(bullet);
+//
+//            ImageView bulletView = bullet.getBulletView();
+//            Main.playLayout.getChildren().add(bulletView);
+//            bulletView.setFitWidth(20);
+//            bulletView.setFitHeight(8);
+//
+//            if (player.isMovingLeft) {
+//                bulletView.setViewport(new Rectangle2D(0, 0, 48, 20));
+//                bulletView.setX(player.getPlayerViewX() - 20);
+//                bulletView.setY(player.getPlayerViewY() + 35);
+//                for (int i = 0; i < bullets.size(); i++) {
+//                    bullet.move(player);
+//                }
+//            }
+//            if (player.isMovingRight) {
+//                bulletView.setViewport(new Rectangle2D(0, 20, 48, 20));
+//                bulletView.setX(player.getPlayerViewX() + player.getPlayerView().getFitWidth());
+//                bulletView.setY(player.getPlayerViewY() + 35);
+//                for (int i = 0; i < bullets.size(); i++) {
+//                    bullet.move(player);
+//                }
+//            }
+//    }
 
 //    public void moveX(double x, ImageView playerView) {
 //        for (int i = 0; i < x; i++) {

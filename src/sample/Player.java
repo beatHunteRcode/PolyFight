@@ -15,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 
 public class Player extends Rectangle {
@@ -25,12 +26,14 @@ public class Player extends Rectangle {
     private boolean canMove = true;
     public boolean isMovingRight = false;
     public boolean isMovingLeft = false;
-
+    public static double playerSpeedX = 5;
+    public static double playerSpeedY = 5;
+    private ArrayList<Bullet> bullets = new ArrayList<>();
 
     public Player (ImageView playerView){
         this.playerView = playerView;
-    }
 
+    }
 
     public void setCanMove(boolean canMove) {
         this.canMove = canMove;
@@ -50,10 +53,10 @@ public class Player extends Rectangle {
         return playerView;
     }
 
+    public ArrayList<Bullet> getBullets() { return  bullets; }
     public void setPlayerViewX(double value) { playerView.setX(value); }
 
     public void setPlayerViewY(double value) { playerView.setY(value); }
-
 
     public void setCanJump(boolean canJump) { this.canJump = canJump; }
 
@@ -74,5 +77,21 @@ public class Player extends Rectangle {
         }
      }
 
+    public void shoot() {
+        Bullet bullet = null;
+        if (isMovingLeft) {
+            bullet = new Bullet(playerView.getX(), playerView.getY() + 20);
 
+        }
+        if (isMovingRight) {
+            bullet = new Bullet(playerView.getX() + 10, playerView.getY() + 20);
+        }
+        Main.playLayout.getChildren().add(1,bullet.getBulletView());
+        bullet.getBulletView().setFitWidth(20);
+        bullet.getBulletView().setFitHeight(8);
+        while (bullets.size() <= 5) {
+            bullet.getBulletView().setVisible(true);
+            bullets.add(bullet);
+        }
+    }
 }

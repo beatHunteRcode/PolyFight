@@ -134,11 +134,11 @@ public class Main extends Application {
                     case '0':
                         break;
                     case '1':
-                        Box platform = createBox(j * 80, i * 80, 80, 80, groundPattern);
+                        Box platform = createBox(j * 40, i * 40, 40, 40, groundPattern);
                         OBSTACLES.add(platform);
                         break;
                     case '2':
-                        Box box = createBox(j * 80, i * 80, 80, 80, boxPattern);
+                        Box box = createBox(j * 40, i * 40, 40, 40, boxPattern);
                         OBSTACLES.add(box);
                         break;
                 }

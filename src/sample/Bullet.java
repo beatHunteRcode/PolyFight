@@ -16,13 +16,11 @@ public class Bullet extends Rectangle {
 
 
     private ImageView bulletView;
-    private double bulletX;
-    private double bulletY;
-
+    private int speed = 30;
+    public boolean isHit;
 
     public Bullet(double bulletX, double bulletY) {
-        this.bulletX = bulletX;
-        this.bulletY = bulletY;
+
         try {
             bulletView = new ImageView(new Image(new FileInputStream("./images/bullet.png")));
         }
@@ -34,20 +32,16 @@ public class Bullet extends Rectangle {
         bulletView.setY(bulletY);
     }
 
-    public double getBulletX() { return bulletX; }
-
-    public double getBulletY() { return bulletY; }
-
     public ImageView getBulletView() { return bulletView; }
 
     public void move(Player player) {
         if (player.isMovingLeft) {
             bulletView.setViewport(new Rectangle2D(0, 0, 48, 20));
-            bulletView.setX(bulletView.getX() - 10);
+            bulletView.setX(bulletView.getX() - speed);
         }
         if (player.isMovingRight) {
             bulletView.setViewport(new Rectangle2D(0, 20, 48, 20));
-            bulletView.setX(bulletView.getX() + 10);
+            bulletView.setX(bulletView.getX() + speed);
         }
         if (    this.getBulletView().getX() > 1280 ||
                 this.getBulletView().getX() < -20) bulletView.setVisible(false);

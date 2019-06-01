@@ -83,20 +83,30 @@ public class Main extends Application {
         Image groundImage = new Image(new FileInputStream("./images/ground.png"));
         Image skyImage = new Image(new FileInputStream("./images/sky.jpg"));
         Image boxImage = new Image(new FileInputStream("./images/box.jpg"));
+        Image redPlayerHealthImage = new Image(new FileInputStream("./images/redPlayerHealth.png"));
+        Image greenPlayerHealthImage = new Image(new FileInputStream("./images/greenPlayerHealth.png"));
 
 
         ImageView redPlayerView = new ImageView(redPlayerImage);
         ImageView greenPlayerView = new ImageView(greenPlayerImage);
         ImageView skyView = new ImageView(skyImage);
+        ImageView redPlayerHealthView = new ImageView(redPlayerHealthImage);
+        ImageView greenPlayerHealthView = new ImageView(greenPlayerHealthImage);
         ImagePattern groundPattern = new ImagePattern(groundImage);
         ImagePattern boxPattern = new ImagePattern(boxImage);
 
+        redPlayerHealthView.setViewport(new Rectangle2D(0,0, 244, 34));
+        greenPlayerHealthView.setViewport(new Rectangle2D(0,0, 244, 34));
+        redPlayerHealthView.setX(10);
+        redPlayerHealthView.setY(10);
+        greenPlayerHealthView.setX(1280 - 244 - 30);
+        greenPlayerHealthView.setY(10);
         redPlayerView.setViewport(new Rectangle2D(0,0, 190, 195));
         greenPlayerView.setViewport(new Rectangle2D(0,195, 180, 195));
 
         StackPane layout = new StackPane(ruleButton, playButton, exitButton);
 
-        playLayout.getChildren().addAll(backButton, skyView, redPlayerView, greenPlayerView);
+        playLayout.getChildren().addAll(backButton, skyView, redPlayerView, greenPlayerView, redPlayerHealthView, greenPlayerHealthView);
         StackPane ruleLayout = new StackPane(backButton, ruleLabel);
 
         mainMenu = new Scene(layout, 1280, 720);
@@ -111,7 +121,7 @@ public class Main extends Application {
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
 
-        Movement movement = new Movement(playScene, redPlayerView, greenPlayerView);
+        Movement movement = new Movement(playScene, redPlayerView, greenPlayerView, redPlayerHealthView, greenPlayerHealthView);
         movement.start();
 
         createLevel(groundPattern, boxPattern);

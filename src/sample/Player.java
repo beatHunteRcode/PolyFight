@@ -8,6 +8,7 @@ import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,16 +23,21 @@ public class Player extends Rectangle {
 
     private ImageView playerView;
     private boolean canJump = true;
-    public Point2D velocity = new Point2D(0, 5);
     private boolean canMove = true;
     public boolean isMovingRight = false;
     public boolean isMovingLeft = false;
     public static double playerSpeedX = 5;
     public double playerSpeedY = 1;
+    public int health = 5;
+    public boolean isHit = true;
+    public boolean isDead = false;
+
+    private ImageView healthView;
     private ArrayList<Bullet> bullets = new ArrayList<>();
 
-    public Player (ImageView playerView){
+    public Player (ImageView playerView, ImageView healthView){
         this.playerView = playerView;
+        this.healthView = healthView;
 
     }
 
@@ -60,26 +66,26 @@ public class Player extends Rectangle {
 
     public void setCanJump(boolean canJump) { this.canJump = canJump; }
 
-    public void move(double x, double y) {
-        Platform.runLater(() -> playerView.setX(playerView.getX() + x));
-        Platform.runLater(() -> playerView.setY(playerView.getY() + y));
-    }
+//    public void move(double x, double y) {
+//        Platform.runLater(() -> playerView.setX(playerView.getX() + x));
+//        Platform.runLater(() -> playerView.setY(playerView.getY() + y));
+//    }
 
     public void moveX(double x) {
         boolean movingRight = x > 0;
 
         for (int i = 0; i < Math.abs(x); i++) {
             for (Box box : Main.OBSTACLES) {
-                if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                    if (movingRight) {
-                        if (this.getPlayerViewX() + this.getPlayerView().getFitWidth() == box.getX()) {
-                            this.getPlayerView().setX(this.getPlayerView().getX() - 1); // справа
+                if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {         //проверка на столкновение игрока и препятсвия
+                    if (movingRight) {  // проверка столкновения справа
+                        if (this.getPlayerViewX() + this.getPlayerView().getFitWidth() == box.getX()) {     //если произошло столкновение
+                            this.getPlayerView().setX(this.getPlayerView().getX() - 1);                     //персонаж перемещается на 1 пиксель влево
                             return;
                         }
                     }
-                    else {
-                        if (this.getPlayerViewX() == box.getX() + box.getWidth()) {
-                            this.getPlayerView().setX(this.getPlayerView().getX() + 1);  // слева
+                    else {              // проверка столкновения слева
+                        if (this.getPlayerViewX() == box.getX() + box.getWidth()) {                         //если произошло столкновение
+                            this.getPlayerView().setX(this.getPlayerView().getX() + 1);                     //персонаж перемещается на 1 пиксель вправо
                             return;
                         }
                     }
@@ -94,16 +100,18 @@ public class Player extends Rectangle {
         for (int i = 0; i < Math.abs(y); i++) {
             for (Box box : Main.OBSTACLES) {
                 if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                    if (movingDown) {
-                        if (this.getPlayerViewY() + this.getPlayerView().getFitHeight() == box.getY()) {
-                            this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху
-                            playerSpeedY = 1;
-                            this.setCanJump(true);
+                    if (movingDown) {   // проверка столкновения снизу
+                        if (this.getPlayerViewY() + this.getPlayerView().getFitHeight() == box.getY()) {    //если произошло столкноение
+                            this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вниз
+                            playerSpeedY = 0;                                                               //убирается скорость чтобы прыжок "обрубался"
+                            this.setCanJump(true);       //только когда персонаж приземлится на платформу он сможет прыгнуть
                             return;
                         }
-                        else if (this.getPlayerViewY() == box.getY() + box.getHeight()) {
-                            this.getPlayerView().setY(this.getPlayerView().getY() + 1);  //снизу
-                            return;
+                        else {          // проверка столкновения сверху
+                            if (this.getPlayerViewY() == box.getY() + box.getHeight()) {                   //если произошло столкновение
+                                this.getPlayerView().setY(this.getPlayerView().getY() + 1);                //персонаж перемещается на 1 пиксель вверх
+                                return;
+                            }
                         }
                     }
                 }
@@ -113,7 +121,7 @@ public class Player extends Rectangle {
     }
     public void jump() {
         if (canJump) {
-            playerSpeedY = -30;
+            playerSpeedY = -20;
             canJump = false;
         }
     }
@@ -128,14 +136,45 @@ public class Player extends Rectangle {
 
         }
         if (isMovingRight) {
-            bullet = new Bullet(playerView.getX() + 10, playerView.getY() + 20);
+            bullet = new Bullet(playerView.getX() + playerView.getFitWidth() - 10, playerView.getY() + 20);
         }
         Main.playLayout.getChildren().add(1,bullet.getBulletView());
         bullet.getBulletView().setFitWidth(20);
         bullet.getBulletView().setFitHeight(8);
-        while (bullets.size() <= 5) {
+        while (bullets.size() < 1) {
             bullet.getBulletView().setVisible(true);
             bullets.add(bullet);
+        }
+    }
+
+    public void checkDamage() {
+        if(isHit) {
+            if (health == 0) isDead = true;
+            health--;
+            isHit = false;
+        }
+    }
+
+    public void showHealthBar(int health) {
+        switch (health) {
+            case 5:
+                healthView.setViewport(new Rectangle2D(0,0, 244, 34));
+                break;
+            case 4:
+                healthView.setViewport(new Rectangle2D(0,34, 244, 34));
+                break;
+            case 3:
+                healthView.setViewport(new Rectangle2D(0,68, 244, 34));
+                break;
+            case 2:
+                healthView.setViewport(new Rectangle2D(0,102, 244, 34));
+                break;
+            case 1:
+                healthView.setViewport(new Rectangle2D(0,136, 244, 34));
+                break;
+            case 0:
+                healthView.setViewport(new Rectangle2D(0,170, 244, 34));
+                break;
         }
     }
 }

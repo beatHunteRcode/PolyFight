@@ -23,32 +23,42 @@ public class Movement {
     private Scene playScene;
     private ImageView redPlayerView;
     private ImageView greenPlayerView;
+    private ImageView redPlayerHealthView;
+    private ImageView greenPlayerHealthView;
+    private long redPlayerLastAttack = 0;
+    private long greenPlayerLastAttack = 0;
+    private long redPlayerCooldownTime = 100; // milliseconds
+    private long greenPlayerCooldownTime = 100; // milliseconds
 
-
-
-    public Movement(Scene playScene, ImageView redPlayerView, ImageView greenPlayerView) {
+    public Movement(Scene playScene, ImageView redPlayerView,
+                    ImageView greenPlayerView,
+                    ImageView redPlayerHealthView,
+                    ImageView greenPlayerHealthView) {
         this.playScene = playScene;
         this.redPlayerView = redPlayerView;
         this.greenPlayerView = greenPlayerView;
+        this.redPlayerHealthView = redPlayerHealthView;
+        this.greenPlayerHealthView = greenPlayerHealthView;
     }
 
     public void start() {
-        Player redPlayer = new Player(redPlayerView);
-        Player greenPlayer = new Player(greenPlayerView);
+        Player redPlayer = new Player(redPlayerView, redPlayerHealthView);
+        Player greenPlayer = new Player(greenPlayerView, greenPlayerHealthView);
 
         ArrayList<Bullet> redPlayerBullets = redPlayer.getBullets();
         ArrayList<Bullet> greenPlayerBullets = greenPlayer.getBullets();
 
         redPlayerView.setX(140);
         redPlayerView.setY(290);
-        redPlayerView.setFitHeight(70);
         redPlayerView.setFitWidth(70);
+        redPlayerView.setFitHeight(70);
         redPlayer.isMovingRight = true;
 
         greenPlayerView.setX(1100);
         greenPlayerView.setY(80);
-        greenPlayerView.setFitHeight(70);
         greenPlayerView.setFitWidth(70);
+        greenPlayerView.setFitHeight(70);
+
         greenPlayer.isMovingLeft = true;
 
         playScene.setOnKeyPressed (key -> {
@@ -81,48 +91,61 @@ public class Movement {
             @Override
             public void handle(long now) {
 
-
-                redPlayer.moveY(redPlayer.playerSpeedY);
-                greenPlayer.moveY(greenPlayer.playerSpeedY);
-
                 //movement for red player
-                if (isWPressed && redPlayerView.getY() > 0) redPlayer.jump();
-                if (isAPressed && redPlayerView.getX() > 0) {
-                    redPlayer.moveX(-Player.playerSpeedX);
-                    redPlayerView.setViewport(new Rectangle2D(0,195, 190, 195));
-                    redPlayer.isMovingLeft = true;
-                    redPlayer.isMovingRight = false;
-                }
-                if (isDPressed && redPlayerView.getX() < 1240) {
-                    redPlayer.moveX(Player.playerSpeedX);
-                    redPlayerView.setViewport(new Rectangle2D(0,0, 190, 195));
-                    redPlayer.isMovingRight = true;
-                    redPlayer.isMovingLeft = false;
-                }
-                if (isSpacePressed) {
-                    if (redPlayer.isMovingRight) redPlayerView.setViewport(new Rectangle2D(190,0, 190, 195));
-                    if (redPlayer.isMovingLeft) redPlayerView.setViewport(new Rectangle2D(195,195, 185, 195));
-                    redPlayer.shoot();
+                if (!redPlayer.isDead) {
+                    if (isWPressed && redPlayerView.getY() > 0) redPlayer.jump();
+                    if (isAPressed && redPlayerView.getX() > 0) {
+                        redPlayer.moveX(-Player.playerSpeedX);
+                        redPlayerView.setViewport(new Rectangle2D(0, 195, 190, 195));
+                        redPlayer.isMovingLeft = true;
+                        redPlayer.isMovingRight = false;
+                    }
+                    if (isDPressed && redPlayerView.getX() < 1240) {
+                        redPlayer.moveX(Player.playerSpeedX);
+                        redPlayerView.setViewport(new Rectangle2D(0, 0, 190, 195));
+                        redPlayer.isMovingRight = true;
+                        redPlayer.isMovingLeft = false;
+                    }
+                    if (isSpacePressed) {
+                        if (redPlayer.isMovingRight) redPlayerView.setViewport(new Rectangle2D(190, 0, 190, 195));
+                        if (redPlayer.isMovingLeft) redPlayerView.setViewport(new Rectangle2D(195, 195, 185, 195));
+
+                        long time = System.currentTimeMillis();
+                        if (time > redPlayerLastAttack + redPlayerCooldownTime) {
+                            redPlayer.shoot();
+                            redPlayerLastAttack = time;
+                        }
+                    }
                 }
 
                 //movement for green player
-                if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
-                if (isLeftPressed && greenPlayerView.getX() > 0) {
-                    greenPlayer.moveX(-Player.playerSpeedX);
-                    greenPlayerView.setViewport(new Rectangle2D(0,195, 180, 195));
-                    greenPlayer.isMovingLeft = true;
-                    greenPlayer.isMovingRight = false;
-                }
-                if (isRightPressed && greenPlayerView.getX() < 1240) {
-                    redPlayer.moveX(Player.playerSpeedX);
-                    greenPlayerView.setViewport(new Rectangle2D(0,0, 180, 195));
-                    greenPlayer.isMovingRight = true;
-                    greenPlayer.isMovingLeft = false;
-                }
-                if (isEnterPressed) {
-                    if (greenPlayer.isMovingRight) greenPlayerView.setViewport(new Rectangle2D(180,0, 180, 195));
-                    if (greenPlayer.isMovingLeft) greenPlayerView.setViewport(new Rectangle2D(185, 195, 180, 195));
-                    greenPlayer.shoot();
+                if (!greenPlayer.isDead) {
+                    if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
+                    if (isLeftPressed && greenPlayerView.getX() > 0) {
+                        greenPlayer.moveX(-Player.playerSpeedX);
+                        greenPlayerView.setViewport(new Rectangle2D(0, 195, 180, 195));
+                        greenPlayer.isMovingLeft = true;
+                        greenPlayer.isMovingRight = false;
+                    }
+                    if (isRightPressed && greenPlayerView.getX() < 1240) {
+                        greenPlayer.moveX(Player.playerSpeedX);
+                        greenPlayerView.setViewport(new Rectangle2D(0, 0, 180, 195));
+                        greenPlayer.isMovingRight = true;
+                        greenPlayer.isMovingLeft = false;
+                    }
+
+                    if (isEnterPressed) {
+                        if (greenPlayer.isMovingRight) greenPlayerView.setViewport(new Rectangle2D(180, 0, 180, 195));
+                        if (greenPlayer.isMovingLeft) greenPlayerView.setViewport(new Rectangle2D(185, 195, 180, 195));
+
+
+                        long time = System.currentTimeMillis();
+                        if (time > greenPlayerLastAttack + greenPlayerCooldownTime) {
+                            greenPlayer.shoot();
+                            greenPlayerLastAttack = time;
+                        }
+
+                    }
                 }
 
                 //--------------------Bullet Fly------------------------------
@@ -133,34 +156,23 @@ public class Movement {
                 redPlayer.fall();
                 greenPlayer.fall();
 
-//                redPlayer.move(0.0, redPlayer.velocity.getY());
-//                greenPlayer.move(0.0, greenPlayer.velocity.getY());
+                redPlayer.moveY(redPlayer.playerSpeedY);
+                greenPlayer.moveY(greenPlayer.playerSpeedY);
 
+                redPlayer.checkDamage();
+                greenPlayer.checkDamage();
 
-//                moveX(redPlayerView.getX(), redPlayerView);
-//                moveY(redPlayerView.getY(), redPlayerView);
+                checkBulletCollisionWithObstacles(redPlayerBullets);
+                checkBulletCollisionWithObstacles(greenPlayerBullets);
 
-//                try {
-//                    ImageView playerView = new ImageView(new Image(new FileInputStream("./images/redPlayer.png")));
-//                    System.out.println(box.isIntersect(playerView));
-//                }
-//                catch (Exception exception) {
-//                    System.err.println("Picture not found!");
-//                }
-
+                checkBulletCollisionWithPlayer(redPlayerBullets, redPlayer);
+                checkBulletCollisionWithPlayer(redPlayerBullets, greenPlayer);
+                checkBulletCollisionWithPlayer(greenPlayerBullets, greenPlayer);
+                checkBulletCollisionWithPlayer(greenPlayerBullets, redPlayer);
 
             }
         };
         animationTimer.start();
-
-
-        //volitile check
-        //чекнуть многопотомчне программирование для решения проблемы с курсором
-        //скачать scene builder с oracle
-        //
-
-
-
     }
 
 
@@ -212,6 +224,34 @@ public class Movement {
             }
         }
     }
+
+    public void checkBulletCollisionWithObstacles(ArrayList<Bullet> bullets) {
+        if (!bullets.isEmpty()) {
+            for (int i = 0; i < bullets.size(); i++) {
+                Bullet bullet = bullets.get(i);
+                for (Box box : Main.OBSTACLES) {
+                    if (bullet.getBulletView().isVisible()) {
+                        if (bullet.getBulletView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+                            bullet.getBulletView().setVisible(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkBulletCollisionWithPlayer(ArrayList<Bullet> bullets, Player player) {
+        for (Bullet bullet : bullets) {
+            if (!bullet.isHit) {
+                if (bullet.getBulletView().getBoundsInParent().intersects(player.getPlayerView().getBoundsInParent())) {
+                    player.showHealthBar(player.health);
+                    player.isHit = true;
+                    bullet.isHit = true;
+                    bullet.getBulletView().setVisible(false);
+                }
+            }
+        }
+    }
 //    private void playerShoot(Player player) {
 //            Bullet bullet = new Bullet(player.getPlayerViewX() - 20, player.getPlayerViewY() + 35);
 //            bullets.add(bullet);
@@ -237,24 +277,5 @@ public class Movement {
 //                    bullet.move(player);
 //                }
 //            }
-//    }
-
-//    public void moveX(double x, ImageView playerView) {
-//        for (int i = 0; i < x; i++) {
-//            for (Rectangle platform: Main.OBSTACLES) {
-//                if (platform.getX() == platform.getX()) {
-//                    return;
-//                }
-//            }
-//        }
-//    }
-//    public void moveY(double y, ImageView playerView) {
-//        for (int i = 0; i < y; i++) {
-//            for (Rectangle platform: Main.OBSTACLES) {
-//                if (playerView.getY() > platform.getY()) {
-//                    playerView.setX(0);
-//                }
-//            }
-//        }
 //    }
 }

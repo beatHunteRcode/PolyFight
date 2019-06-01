@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 public class Box extends Rectangle {
 
-    private  int width;
+    private int width;
     private int height;
     private ImagePattern texture;
 
@@ -18,7 +18,6 @@ public class Box extends Rectangle {
     }
     public Box(int width, int height, ImagePattern texture) {
         super(width, height, texture);
-
         this.width = width;
         this.height = height;
         this.texture = texture;

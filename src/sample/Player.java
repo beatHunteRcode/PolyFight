@@ -28,7 +28,7 @@ public class Player {
     public boolean isMovingLeft = false;
     public static double playerSpeedX = 5;
     public double playerSpeedY = 20;
-    public int health = 5;
+    public int health = 6;
     private double jumpForce = -20;
     public boolean isHit = true;
     public boolean isDead = false;
@@ -68,11 +68,6 @@ public class Player {
     public void setPlayerViewY(double value) { playerView.setY(value); }
 
     public void setCanJump(boolean canJump) { this.canJump = canJump; }
-
-//    public void move(double x, double y) {
-//        Platform.runLater(() -> playerView.setX(playerView.getX() + x));
-//        Platform.runLater(() -> playerView.setY(playerView.getY() + y));
-//    }
 
     public void move(double x, double y) {
 
@@ -153,8 +148,9 @@ public class Player {
     }
 
     public void checkDamage() {
+        showHealthBar(health);
+        if (health < 1) isDead = true;
         if(isHit) {
-            if (health == 0) isDead = true;
             health--;
             isHit = false;
         }

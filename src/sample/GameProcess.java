@@ -25,20 +25,31 @@ public class GameProcess {
     private ImageView greenPlayerView;
     private ImageView redPlayerHealthView;
     private ImageView greenPlayerHealthView;
+    private ImageView redPlayerDeathScreenView;
+    private ImageView greenPlayerDeathScreenView;
     private long redPlayerLastAttack = 0;
     private long greenPlayerLastAttack = 0;
     private long redPlayerCooldownTime = 1000; // milliseconds
     private long greenPlayerCooldownTime = 1000; // milliseconds
+    private boolean isRedPlayerDeathScreenAdded = false;
+    private boolean isGreenPlayerDeathScreenAdded = false;
+    private boolean isGameEnded = false;
+
+    AnimationTimer animationTimer;
 
     public GameProcess(Scene playScene, ImageView redPlayerView,
                        ImageView greenPlayerView,
                        ImageView redPlayerHealthView,
-                       ImageView greenPlayerHealthView) {
+                       ImageView greenPlayerHealthView,
+                       ImageView redPlayerDeathScreenView,
+                       ImageView greenPLayerDeathScreenView) {
         this.playScene = playScene;
         this.redPlayerView = redPlayerView;
         this.greenPlayerView = greenPlayerView;
         this.redPlayerHealthView = redPlayerHealthView;
         this.greenPlayerHealthView = greenPlayerHealthView;
+        this.redPlayerDeathScreenView = redPlayerDeathScreenView;
+        this.greenPlayerDeathScreenView = greenPLayerDeathScreenView;
     }
 
     public void start() {
@@ -50,16 +61,15 @@ public class GameProcess {
         ArrayList<Bullet> greenPlayerBullets = greenPlayer.getBullets();
 
         redPlayerView.setX(140);
-        redPlayerView.setY(290);
+        redPlayerView.setY(500);
         redPlayerView.setFitWidth(70);
         redPlayerView.setFitHeight(70);
         redPlayer.isMovingRight = true;
 
-        greenPlayerView.setX(1100);
-        greenPlayerView.setY(80);
+        greenPlayerView.setX(1150);
+        greenPlayerView.setY(400);
         greenPlayerView.setFitWidth(70);
         greenPlayerView.setFitHeight(70);
-
         greenPlayer.isMovingLeft = true;
 
         playScene.setOnKeyPressed (key -> {
@@ -74,8 +84,38 @@ public class GameProcess {
             if (keyCode.equals(KeyCode.ENTER)) isEnterPressed = true;
             if (keyCode.equals(KeyCode.RIGHT)) isRightPressed = true;
 
+            //exit to main menu
             if (keyCode.equals(KeyCode.ESCAPE)) {
+                Main.playLayout.getChildren().clear();
+                Main.OBSTACLES.clear();
                 Main.window.setScene(Main.mainMenu);
+                animationTimer.stop();
+            }
+
+            //restart
+            if (redPlayer.isDead || greenPlayer.isDead) {
+                if (keyCode.equals(KeyCode.R)) {
+                    Main.playLayout.getChildren().remove(redPlayerDeathScreenView);
+                    Main.playLayout.getChildren().remove(greenPlayerDeathScreenView);
+
+                    isRedPlayerDeathScreenAdded = false;
+                    isGreenPlayerDeathScreenAdded = false;
+
+                    redPlayer.isDead = false;
+                    greenPlayer.isDead = false;
+                    redPlayer.health = 5;
+                    greenPlayer.health = 5;
+
+                    redPlayerView.setX(140);
+                    redPlayerView.setY(500);
+                    redPlayer.isMovingRight = true;
+
+                    greenPlayerView.setX(1150);
+                    greenPlayerView.setY(400);
+                    greenPlayer.isMovingLeft = true;
+
+                    isGameEnded = false;
+                }
             }
         });
 
@@ -92,9 +132,20 @@ public class GameProcess {
             if (keyCode.equals(KeyCode.RIGHT)) isRightPressed = false;
         });
 
-        AnimationTimer animationTimer = new AnimationTimer() {
+        animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+
+                if (redPlayer.isDead && !isRedPlayerDeathScreenAdded && !isGameEnded) {
+                    Main.playLayout.getChildren().add(redPlayerDeathScreenView);
+                    isRedPlayerDeathScreenAdded = true;
+                    isGameEnded = true;
+                }
+                if (greenPlayer.isDead && !isGreenPlayerDeathScreenAdded && !isGameEnded) {
+                    Main.playLayout.getChildren().add(greenPlayerDeathScreenView);
+                    isGreenPlayerDeathScreenAdded = true;
+                    isGameEnded = true;
+                }
 
                 //movement for red player
                 if (!redPlayer.isDead) {
@@ -165,7 +216,7 @@ public class GameProcess {
                 redPlayer.checkDamage();
                 greenPlayer.checkDamage();
 
-                if (redPlayer.isDead && !greenPlayer.isDead) greenPlayer.victory = true;
+                if (redPlayer.isDead && !greenPlayer.isDead)greenPlayer.victory = true;
                 else greenPlayer.victory = false;
                 if (greenPlayer.isDead && !redPlayer.isDead) redPlayer.victory = true;
                 else redPlayer.victory = false;
@@ -182,43 +233,6 @@ public class GameProcess {
         };
         animationTimer.start();
     }
-
-
-
-
-//    public void collisionObstaclesCheckX(Player player) {
-//        for (int i = 0; i < Math.abs(Player.playerSpeedX); i++) {
-//            for (Box box : Main.OBSTACLES) {
-//                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-//                    if (player.getPlayerViewX() + player.getPlayerView().getFitWidth() == box.getX()) {
-//                        player.getPlayerView().setX(player.getPlayerView().getX() - 1);  // справа
-//                        return;
-//                    }
-//                    if (player.getPlayerViewX() == box.getX() + box.getWidth()) {
-//                        player.getPlayerView().setX(player.getPlayerView().getX() + 1);   // слева
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    public void collisionObstaclesCheckY(Player player) {
-//        for (int i = 0; i < Player.playerSpeedY; i++) {
-//            for (Box box : Main.OBSTACLES) {
-//                if (player.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-//                    if (player.getPlayerViewY() + player.getPlayerView().getFitHeight() == box.getY()) {
-//                        player.move(0.0, -Player.playerSpeedY);  // сверху
-//                        player.setCanJump(true);
-//                        return;
-//                    }
-//                    if (player.getPlayerViewY() == box.getY() + box.getHeight()) {
-//                        player.move(0.0, Player.playerSpeedY);   //снизу
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-//    }
 
 
     public void flyOfBullets(ArrayList<Bullet> bullets, Player player) {
@@ -256,7 +270,6 @@ public class GameProcess {
             for (int i = 0; i < Math.abs(bullet.speed); i++) {
                 if (!bullet.isHit) {
                     if (bullet.getBulletView().getBoundsInParent().intersects(player.getPlayerView().getBoundsInParent())) {
-                        player.showHealthBar(player.health);
                         player.isHit = true;
                         bullet.isHit = true;
                         bullet.getBulletView().setVisible(false);
@@ -265,30 +278,4 @@ public class GameProcess {
             }
         }
     }
-//    private void playerShoot(Player player) {
-//            Bullet bullet = new Bullet(player.getPlayerViewX() - 20, player.getPlayerViewY() + 35);
-//            bullets.add(bullet);
-//
-//            ImageView bulletView = bullet.getBulletView();
-//            Main.playLayout.getChildren().add(bulletView);
-//            bulletView.setFitWidth(20);
-//            bulletView.setFitHeight(8);
-//
-//            if (player.isMovingLeft) {
-//                bulletView.setViewport(new Rectangle2D(0, 0, 48, 20));
-//                bulletView.setX(player.getPlayerViewX() - 20);
-//                bulletView.setY(player.getPlayerViewY() + 35);
-//                for (int i = 0; i < bullets.size(); i++) {
-//                    bullet.move(player);
-//                }
-//            }
-//            if (player.isMovingRight) {
-//                bulletView.setViewport(new Rectangle2D(0, 20, 48, 20));
-//                bulletView.setX(player.getPlayerViewX() + player.getPlayerView().getFitWidth());
-//                bulletView.setY(player.getPlayerViewY() + 35);
-//                for (int i = 0; i < bullets.size(); i++) {
-//                    bullet.move(player);
-//                }
-//            }
-//    }
 }

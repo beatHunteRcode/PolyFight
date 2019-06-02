@@ -1,21 +1,8 @@
 package sample;
 
-import com.sun.javafx.geom.BaseBounds;
-
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
-import javafx.application.Platform;
-import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Rectangle;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 
@@ -23,7 +10,6 @@ public class Player {
 
     private ImageView playerView;
     private boolean canJump = true;
-    private boolean canMove = true;
     public boolean isMovingRight = false;
     public boolean isMovingLeft = false;
     public static double playerSpeedX = 5;
@@ -41,14 +27,6 @@ public class Player {
         this.playerView = playerView;
         this.healthView = healthView;
 
-    }
-
-    public void setCanMove(boolean canMove) {
-        this.canMove = canMove;
-    }
-
-    public boolean isCanMove() {
-        return canMove;
     }
 
     public double getPlayerViewX() { return playerView.getX(); }

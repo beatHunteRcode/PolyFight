@@ -1,9 +1,6 @@
 package sample;
 
 
-
-import javafx.geometry.Bounds;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 

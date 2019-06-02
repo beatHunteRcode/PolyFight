@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 
-public class Player extends Rectangle {
+public class Player {
 
     private ImageView playerView;
     private boolean canJump = true;
@@ -27,10 +27,12 @@ public class Player extends Rectangle {
     public boolean isMovingRight = false;
     public boolean isMovingLeft = false;
     public static double playerSpeedX = 5;
-    public double playerSpeedY = 1;
+    public double playerSpeedY = 20;
     public int health = 5;
+    private double jumpForce = -20;
     public boolean isHit = true;
     public boolean isDead = false;
+    public boolean victory = false;
 
     private ImageView healthView;
     private ArrayList<Bullet> bullets = new ArrayList<>();
@@ -60,6 +62,7 @@ public class Player extends Rectangle {
     }
 
     public ArrayList<Bullet> getBullets() { return  bullets; }
+
     public void setPlayerViewX(double value) { playerView.setX(value); }
 
     public void setPlayerViewY(double value) { playerView.setY(value); }
@@ -71,19 +74,20 @@ public class Player extends Rectangle {
 //        Platform.runLater(() -> playerView.setY(playerView.getY() + y));
 //    }
 
-    public void moveX(double x) {
-        boolean movingRight = x > 0;
+    public void move(double x, double y) {
 
+        //движение по ОХ
+        boolean movingRight = x > 0;
         for (int i = 0; i < Math.abs(x); i++) {
             for (Box box : Main.OBSTACLES) {
                 if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {         //проверка на столкновение игрока и препятсвия
-                    if (movingRight) {  // проверка столкновения справа
+                    if (movingRight) {  // проверка столкновения справа от игрока
                         if (this.getPlayerViewX() + this.getPlayerView().getFitWidth() == box.getX()) {     //если произошло столкновение
                             this.getPlayerView().setX(this.getPlayerView().getX() - 1);                     //персонаж перемещается на 1 пиксель влево
                             return;
                         }
                     }
-                    else {              // проверка столкновения слева
+                    else {              // проверка столкновения слева от игрока
                         if (this.getPlayerViewX() == box.getX() + box.getWidth()) {                         //если произошло столкновение
                             this.getPlayerView().setX(this.getPlayerView().getX() + 1);                     //персонаж перемещается на 1 пиксель вправо
                             return;
@@ -93,35 +97,37 @@ public class Player extends Rectangle {
             }
             this.getPlayerView().setX(this.getPlayerView().getX() + (movingRight ? 1 : -1));
         }
-    }
 
-    public void moveY(double y) {
+        //движение по ОY
         boolean movingDown = y > 0;
         for (int i = 0; i < Math.abs(y); i++) {
             for (Box box : Main.OBSTACLES) {
                 if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
-                    if (movingDown) {   // проверка столкновения снизу
+                    if (movingDown) {   // проверка столкновения снизу от игрока
                         if (this.getPlayerViewY() + this.getPlayerView().getFitHeight() == box.getY()) {    //если произошло столкноение
-                            this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вниз
-                            playerSpeedY = 0;                                                               //убирается скорость чтобы прыжок "обрубался"
+                            this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вверх
+                            playerSpeedY = 1;            //скорость обнуляется чтобы падение было реалистичным
                             this.setCanJump(true);       //только когда персонаж приземлится на платформу он сможет прыгнуть
+                            if (victory) playerSpeedY = -10;  //празднование победы
                             return;
                         }
-                        else {          // проверка столкновения сверху
-                            if (this.getPlayerViewY() == box.getY() + box.getHeight()) {                   //если произошло столкновение
-                                this.getPlayerView().setY(this.getPlayerView().getY() + 1);                //персонаж перемещается на 1 пиксель вверх
-                                return;
-                            }
+                    }
+                    else {          // проверка столкновения сверху от игрока
+                        if (this.getPlayerViewY() == box.getY() + box.getHeight()) {                    //если произошло столкновение
+                            playerSpeedY = 0;//персонаж перемещается на 1 пиксель вниз
+                            return;
                         }
                     }
                 }
             }
+            //если коллизии не произошло, то персонаж просто падает вниз, а если уже находится на платформе, то поднимается вверх на 1 пиксель
             this.getPlayerView().setY(this.getPlayerView().getY() + (movingDown ? 1 : -1));
         }
     }
+
     public void jump() {
         if (canJump) {
-            playerSpeedY = -20;
+            playerSpeedY = jumpForce;
             canJump = false;
         }
     }
@@ -131,12 +137,11 @@ public class Player extends Rectangle {
 
     public void shoot() {
         Bullet bullet = null;
-        if (isMovingLeft) {
-            bullet = new Bullet(playerView.getX(), playerView.getY() + 20);
-
+        if (this.isMovingLeft) {
+            bullet = new Bullet(playerView.getX() - 20, playerView.getY() + 20, false, true);
         }
-        if (isMovingRight) {
-            bullet = new Bullet(playerView.getX() + playerView.getFitWidth() - 10, playerView.getY() + 20);
+        if (this.isMovingRight) {
+            bullet = new Bullet(playerView.getX() + playerView.getFitWidth(), playerView.getY() + 20, true, false);
         }
         Main.playLayout.getChildren().add(1,bullet.getBulletView());
         bullet.getBulletView().setFitWidth(20);

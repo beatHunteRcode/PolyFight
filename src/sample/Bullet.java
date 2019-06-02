@@ -1,25 +1,22 @@
 package sample;
 
 
-import javafx.application.Platform;
-import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Rectangle;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
-public class Bullet extends Rectangle {
-
+public class Bullet {
 
     private ImageView bulletView;
-    private int speed = 30;
+    public int speed = 15;
     public boolean isHit;
+    public boolean moveRight;
+    private boolean moveLeft;
 
-    public Bullet(double bulletX, double bulletY) {
+    public Bullet(double bulletX, double bulletY, boolean moveRight, boolean moveLeft) {
 
         try {
             bulletView = new ImageView(new Image(new FileInputStream("./images/bullet.png")));
@@ -30,20 +27,21 @@ public class Bullet extends Rectangle {
         bulletView.setVisible(false);
         bulletView.setX(bulletX);
         bulletView.setY(bulletY);
+        this.moveRight = moveRight;
+        this.moveLeft = moveLeft;
     }
 
     public ImageView getBulletView() { return bulletView; }
 
     public void move(Player player) {
-        if (player.isMovingLeft) {
+        if (player.isMovingLeft && this.moveLeft) {
             bulletView.setViewport(new Rectangle2D(0, 0, 48, 20));
             bulletView.setX(bulletView.getX() - speed);
         }
-        if (player.isMovingRight) {
+        if (player.isMovingRight && this.moveRight) {
             bulletView.setViewport(new Rectangle2D(0, 20, 48, 20));
             bulletView.setX(bulletView.getX() + speed);
         }
-        if (    this.getBulletView().getX() > 1280 ||
-                this.getBulletView().getX() < -20) bulletView.setVisible(false);
+        this.getBulletView().setX(this.getBulletView().getX() + (moveRight ? this.speed : -this.speed));
     }
 }

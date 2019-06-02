@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class Main extends Application {
 
-    Stage window = new Stage();
+    public static Stage window = new Stage();
     private Button ruleButton = new Button("Rules");
     private Button playButton = new Button("PLAY!!!");
     private Button exitButton = new Button("Exit");
@@ -41,9 +41,9 @@ public class Main extends Application {
             "ENTER - shoot\n\n\n" +
             "GL HF!!!");
 
-    private Scene mainMenu;
+    public static Scene mainMenu;
     private Scene playScene;
-    private Scene ruleWindow;
+    private Scene ruleScene;
     public static Pane playLayout = new Pane();
 
     public static final ArrayList<Box> OBSTACLES = new ArrayList<>();
@@ -114,18 +114,18 @@ public class Main extends Application {
         primaryStage.show();
 
         playScene = new Scene(playLayout, 1280, 720);
-        ruleWindow = new Scene(ruleLayout, 1280, 720);
+        ruleScene = new Scene(ruleLayout, 1280, 720);
 
-        ruleButton.setOnAction(event -> primaryStage.setScene(ruleWindow));
-        playButton.setOnAction(event -> primaryStage.setScene(playScene));
+        ruleButton.setOnAction(event -> primaryStage.setScene(ruleScene));
+        playButton.setOnAction(event -> {
+            primaryStage.setScene(playScene);
+            GameProcess gameProcess = new GameProcess(playScene, redPlayerView, greenPlayerView, redPlayerHealthView, greenPlayerHealthView);
+            gameProcess.start();
+        });
         exitButton.setOnAction(event -> closeProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
 
-        Movement movement = new Movement(playScene, redPlayerView, greenPlayerView, redPlayerHealthView, greenPlayerHealthView);
-        movement.start();
-
         createLevel(groundPattern, boxPattern);
-
     }
 
     private void closeProgram() {

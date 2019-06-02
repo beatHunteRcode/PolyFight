@@ -21,6 +21,7 @@ public class Levels {
             "11111111111111111111111111111111",
     };
 
+
     public static final  String[] LEVEL02_Cave = new String[] {
             "11111111111111111111111111111111",
             "11001100000000010000010000000011",

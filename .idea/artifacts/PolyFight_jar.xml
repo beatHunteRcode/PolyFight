@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PolyFight:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PolyFight_jar</output-path>
+    <root id="archive" name="PolyFight.jar">
+      <element id="module-output" name="PolyFight" />
+    </root>
+  </artifact>
+</component>

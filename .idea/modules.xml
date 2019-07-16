@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PolyFight.iml" filepath="$PROJECT_DIR$/PolyFight.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PolyFight.iml" filepath="$PROJECT_DIR$/.idea/PolyFight.iml" />
     </modules>
   </component>
 </project>

@@ -19,10 +19,10 @@ public class Bullet {
     public Bullet(double bulletX, double bulletY, boolean moveRight, boolean moveLeft) {
 
         try {
-            bulletView = new ImageView(new Image(new FileInputStream("./images/bullet.png")));
+            bulletView = new ImageView(new Image(new FileInputStream("src/images/bullet.png")));
         }
         catch (FileNotFoundException e) {
-            System.err.println("File ./images/bullet.png didn't found");
+            System.err.println("File src/images/bullet.png didn't found");
         }
         bulletView.setVisible(false);
         bulletView.setX(bulletX);

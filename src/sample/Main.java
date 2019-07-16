@@ -70,29 +70,29 @@ public class Main extends Application {
 
 
         //-------------------------------Images-----------------------------------------------
-        Image redPlayerImage = new Image(new FileInputStream("./images/redPlayer.png"));
-        Image greenPlayerImage = new Image(new FileInputStream("./images/greenPlayer.png"));
+        Image redPlayerImage = new Image(new FileInputStream("src/images/redPlayer.png"));
+        Image greenPlayerImage = new Image(new FileInputStream("src/images/greenPlayer.png"));
 
-        Image groundImage = new Image(new FileInputStream("./images/ground.png"));
-        Image boxImage = new Image(new FileInputStream("./images/box.jpg"));
-        Image stoneImage = new Image(new FileInputStream("./images/stone.png"));
-        Image moonGroundImage = new Image(new FileInputStream("./images/moon_ground.jpg"));
+        Image groundImage = new Image(new FileInputStream("src/images/ground.png"));
+        Image boxImage = new Image(new FileInputStream("src/images/box.jpg"));
+        Image stoneImage = new Image(new FileInputStream("src/images/stone.png"));
+        Image moonGroundImage = new Image(new FileInputStream("src/images/moon_ground.jpg"));
 
-        Image skyImage = new Image(new FileInputStream("./images/sky.jpg"));
-        Image caveImage = new Image(new FileInputStream("./images/cave.jpg"));
-        Image earthImage = new Image(new FileInputStream("./images/earth.jpg"));
+        Image skyImage = new Image(new FileInputStream("src/images/sky.jpg"));
+        Image caveImage = new Image(new FileInputStream("src/images/cave.jpg"));
+        Image earthImage = new Image(new FileInputStream("src/images/earth.jpg"));
 
-        Image redPlayerHealthImage = new Image(new FileInputStream("./images/redPlayerHealth.png"));
-        Image greenPlayerHealthImage = new Image(new FileInputStream("./images/greenPlayerHealth.png"));
+        Image redPlayerHealthImage = new Image(new FileInputStream("src/images/redPlayerHealth.png"));
+        Image greenPlayerHealthImage = new Image(new FileInputStream("src/images/greenPlayerHealth.png"));
 
-        Image redPlayerDeathScreenImage = new Image(new FileInputStream("./images/redPlayerDeathScreen.png"));
-        Image greenPayerDeathScreenImage = new Image(new FileInputStream("./images/greenPlayerDeathScreen.png"));
+        Image redPlayerDeathScreenImage = new Image(new FileInputStream("src/images/redPlayerDeathScreen.png"));
+        Image greenPayerDeathScreenImage = new Image(new FileInputStream("src/images/greenPlayerDeathScreen.png"));
 
-        Image flyingIslandLevelImage = new Image(new FileInputStream("./images/flying_island_level.PNG"));
-        Image caveLevelImage = new Image(new FileInputStream("./images/cave_level.PNG"));
-        Image moonLevelImage = new Image(new FileInputStream("./images/moon_level.PNG"));
+        Image flyingIslandLevelImage = new Image(new FileInputStream("src/images/flying_island_level.PNG"));
+        Image caveLevelImage = new Image(new FileInputStream("src/images/cave_level.PNG"));
+        Image moonLevelImage = new Image(new FileInputStream("src/images/moon_level.PNG"));
 
-        Image rulesImage = new Image(new FileInputStream("./images/rules_image.png"));
+        Image rulesImage = new Image(new FileInputStream("src/images/rules_image.png"));
 
         //------------------------------------------------------------------------------------
 

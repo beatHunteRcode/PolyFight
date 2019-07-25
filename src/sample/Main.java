@@ -192,6 +192,7 @@ public class Main extends Application {
             if (caveRadioButton.isSelected()) createLevel(caveView, stonePattern, stonePattern, Levels.LEVEL02_Cave);
             if (moonRadioButton.isSelected()) createLevel(earthView, moonGroundPattern, moonGroundPattern, Levels.LEVEL03_Moon);
 
+
             playLayout.getChildren().addAll(redPlayerView, greenPlayerView, redPlayerHealthView, greenPlayerHealthView);
         });
         exitButton.setOnAction(event -> closeProgram());

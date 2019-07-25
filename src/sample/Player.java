@@ -14,9 +14,10 @@ public class Player {
     public boolean isMovingLeft = false;
     public static double playerSpeedX = 5;
     public double playerSpeedY = 20;
-    public int health = 6;
+    public int health = 5;
+
     private double jumpForce = -20;
-    public boolean isHit = true;
+    public boolean isHit = false;
     public boolean isDead = false;
     public boolean victory = false;
 
@@ -134,8 +135,8 @@ public class Player {
         showHealthBar(health);
         if (health < 1) isDead = true;
         if(isHit) {
-            health--;
             isHit = false;
+            health--;
         }
     }
 

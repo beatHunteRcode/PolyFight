@@ -79,7 +79,7 @@ public class Player {
                     if (movingDown) {   // проверка столкновения снизу от игрока
                         if (this.getPlayerViewY() + this.getPlayerView().getFitHeight() == box.getY()) {    //если произошло столкноение
                             this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вверх
-                            playerSpeedY = 1;            //скорость обнуляется чтобы падение было реалистичным
+                            playerSpeedY = 1;            //скорость приравнивается к 1, чтобы падение было реалистичным
                             this.setCanJump(true);       //только когда персонаж приземлится на платформу он сможет прыгнуть
                             if (victory) playerSpeedY = -10;  //празднование победы
                             return;
@@ -105,7 +105,12 @@ public class Player {
         }
     }
      void fall() {
-        this.playerSpeedY++;
+            //изменение гравитации для Луны
+            //на Луне, падение медленней, чем на других уровнях
+            if (Main.moonRadioButton.isSelected()) {
+                this.playerSpeedY = this.playerSpeedY + 0.5;
+            }
+            else playerSpeedY++;
      }
 
     public void shoot() {

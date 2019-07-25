@@ -27,9 +27,9 @@ public class Main extends Application {
     private Button exitButton = new Button("Exit");
     private Button backButton = new Button("Back");
 
-    private RadioButton flyingIslandRadioButton = new RadioButton("Flying Island");
-    private RadioButton caveRadioButton = new RadioButton("Cave");
-    private RadioButton moonRadioButton = new RadioButton("Moon");
+    public static RadioButton flyingIslandRadioButton = new RadioButton("Flying Island");
+    public static RadioButton caveRadioButton = new RadioButton("Cave");
+    public static RadioButton moonRadioButton = new RadioButton("Moon");
     private ToggleGroup chooseLevel = new ToggleGroup();
 
 

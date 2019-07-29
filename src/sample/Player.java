@@ -3,12 +3,13 @@ package sample;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Player {
+public class Player implements Serializable {
 
-    private ImageView playerView;
+
     private boolean canJump = true;
     public boolean isMovingRight = false;
     public boolean isMovingLeft = false;
@@ -16,70 +17,54 @@ public class Player {
     public double playerSpeedY = 20;
     public int health = 5;
 
+    public static final int playerWidth = 70;
+    public static final int playerHeight = 70;
+
     private double jumpForce = -20;
     public boolean isHit = false;
     public boolean isDead = false;
     public boolean victory = false;
 
-    private ImageView healthView;
     private ArrayList<Bullet> bullets = new ArrayList<>();
 
-    public Player (ImageView playerView, ImageView healthView){
-        this.playerView = playerView;
-        this.healthView = healthView;
-
-    }
-
-    public double getPlayerViewX() { return playerView.getX(); }
-
-    public double getPlayerViewY() {
-        return playerView.getY();
-    }
-
-    public ImageView getPlayerView() {
-        return playerView;
-    }
+    public Player (){ }
 
     public ArrayList<Bullet> getBullets() { return  bullets; }
 
-    public void setPlayerViewX(double value) { playerView.setX(value); }
-
-    public void setPlayerViewY(double value) { playerView.setY(value); }
-
     public void setCanJump(boolean canJump) { this.canJump = canJump; }
 
-    public void move(double x, double y) {
+    public void move(double x, double y, ImageView playerView) {
 
         //движение по ОХ
         boolean movingRight = x > 0;
         for (int i = 0; i < Math.abs(x); i++) {
             for (Box box : Main.OBSTACLES) {
-                if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {         //проверка на столкновение игрока и препятсвия
+                if (playerView.getBoundsInParent().intersects(box.getBoundsInParent())) {         //проверка на столкновение игрока и препятсвия
                     if (movingRight) {  // проверка столкновения справа от игрока
-                        if (this.getPlayerViewX() + this.getPlayerView().getFitWidth() == box.getX()) {     //если произошло столкновение
-                            this.getPlayerView().setX(this.getPlayerView().getX() - 1);                     //персонаж перемещается на 1 пиксель влево
+                        if (playerView.getX() + playerView.getFitWidth() == box.getX()) {     //если произошло столкновение
+                            playerView.setX(playerView.getX() - 1);                     //персонаж перемещается на 1 пиксель влево
                             return;
                         }
                     }
                     else {              // проверка столкновения слева от игрока
-                        if (this.getPlayerViewX() == box.getX() + box.getWidth()) {                         //если произошло столкновение
-                            this.getPlayerView().setX(this.getPlayerView().getX() + 1);                     //персонаж перемещается на 1 пиксель вправо
+                        if (playerView.getX() == box.getX() + box.getWidth()) {                         //если произошло столкновение
+                            playerView.setX(playerView.getX() + 1);                     //персонаж перемещается на 1 пиксель вправо
                             return;
                         }
                     }
                 }
             }
-            this.getPlayerView().setX(this.getPlayerView().getX() + (movingRight ? 1 : -1));
+            playerView.setX(playerView.getX() + (movingRight ? 1 : -1));
         }
 
         //движение по ОY
         boolean movingDown = y > 0;
         for (int i = 0; i < Math.abs(y); i++) {
             for (Box box : Main.OBSTACLES) {
-                if (this.getPlayerView().getBoundsInParent().intersects(box.getBoundsInParent())) {
+                if (playerView.getBoundsInParent().intersects(box.getBoundsInParent())) {
                     if (movingDown) {   // проверка столкновения снизу от игрока
-                        if (this.getPlayerViewY() + this.getPlayerView().getFitHeight() == box.getY()) {    //если произошло столкноение
-                            this.getPlayerView().setY(this.getPlayerView().getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вверх
+                        if (playerView.getY() + playerView.getFitHeight() == box.getY()) {    //если произошло столкноение
+                            playerView.setY(playerView.getY() - 1);  // сверху          //персонаж перемещается на 1 пиксель вверх
                             playerSpeedY = 1;            //скорость приравнивается к 1, чтобы падение было реалистичным
                             this.setCanJump(true);       //только когда персонаж приземлится на платформу он сможет прыгнуть
                             if (victory) playerSpeedY = -10;  //празднование победы
@@ -87,7 +72,7 @@ public class Player {
                         }
                     }
                     else {          // проверка столкновения сверху от игрока
-                        if (this.getPlayerViewY() == box.getY() + box.getHeight()) {                    //если произошло столкновение
+                        if (playerView.getY() == box.getY() + box.getHeight()) {                    //если произошло столкновение
                             playerSpeedY = 0;//персонаж перемещается на 1 пиксель вниз
                             return;
                         }
@@ -95,7 +80,7 @@ public class Player {
                 }
             }
             //если коллизии не произошло, то персонаж просто падает вниз, а если уже находится на платформе, то поднимается вверх на 1 пиксель
-            this.getPlayerView().setY(this.getPlayerView().getY() + (movingDown ? 1 : -1));
+            playerView.setY(playerView.getY() + (movingDown ? 1 : -1));
         }
     }
 
@@ -114,7 +99,7 @@ public class Player {
             else playerSpeedY++;
      }
 
-    public void shoot() {
+    public void shoot(ImageView playerView) {
         Bullet bullet = null;
         if (this.isMovingLeft) {
             bullet = new Bullet(playerView.getX() - 20, playerView.getY() + 20, false, true);
@@ -132,7 +117,6 @@ public class Player {
     }
 
     public void checkDamage() {
-        showHealthBar(health);
         if (health < 1) isDead = true;
         if(isHit) {
             isHit = false;
@@ -140,26 +124,5 @@ public class Player {
         }
     }
 
-    public void showHealthBar(int health) {
-        switch (health) {
-            case 5:
-                healthView.setViewport(new Rectangle2D(0,0, 244, 34));
-                break;
-            case 4:
-                healthView.setViewport(new Rectangle2D(0,34, 244, 34));
-                break;
-            case 3:
-                healthView.setViewport(new Rectangle2D(0,68, 244, 34));
-                break;
-            case 2:
-                healthView.setViewport(new Rectangle2D(0,102, 244, 34));
-                break;
-            case 1:
-                healthView.setViewport(new Rectangle2D(0,136, 244, 34));
-                break;
-            case 0:
-                healthView.setViewport(new Rectangle2D(0,170, 244, 34));
-                break;
-        }
-    }
+
 }

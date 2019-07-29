@@ -6,6 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 
@@ -54,16 +57,27 @@ public class GameProcess {
 
     public void start() {
 
-        Player redPlayer = new Player(redPlayerView, redPlayerHealthView);
-        Player greenPlayer = new Player(greenPlayerView, greenPlayerHealthView);
+        Player redPlayer = new Player();
+        Player greenPlayer = new Player();
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream("RedPlayerProperties.txt");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(redPlayer);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+        }
+        catch (IOException exception) {
+            exception.printStackTrace();
+        }
 
         ArrayList<Bullet> redPlayerBullets = redPlayer.getBullets();
         ArrayList<Bullet> greenPlayerBullets = greenPlayer.getBullets();
 
         redPlayerView.setX(140);
         redPlayerView.setY(500);
-        redPlayerView.setFitWidth(70);
-        redPlayerView.setFitHeight(70);
+        redPlayerView.setFitWidth(Player.playerWidth);
+        redPlayerView.setFitHeight(Player.playerHeight);
         redPlayer.isMovingRight = true;
 
         greenPlayerView.setX(1150);
@@ -151,13 +165,13 @@ public class GameProcess {
                 if (!redPlayer.isDead) {
                     if (isWPressed && redPlayerView.getY() > 0) redPlayer.jump();
                     if (isAPressed && redPlayerView.getX() > 0) {
-                        redPlayer.move(-Player.playerSpeedX, 0);
+                        redPlayer.move(-Player.playerSpeedX, 0, redPlayerView);
                         redPlayerView.setViewport(new Rectangle2D(0, 195, 190, 195));
                         redPlayer.isMovingLeft = true;
                         redPlayer.isMovingRight = false;
                     }
                     if (isDPressed && redPlayerView.getX() < 1240) {
-                        redPlayer.move(Player.playerSpeedX,0 );
+                        redPlayer.move(Player.playerSpeedX,0, redPlayerView);
                         redPlayerView.setViewport(new Rectangle2D(0, 0, 190, 195));
                         redPlayer.isMovingRight = true;
                         redPlayer.isMovingLeft = false;
@@ -168,7 +182,7 @@ public class GameProcess {
 
                         long time = System.currentTimeMillis();
                         if (time > redPlayerLastAttack + redPlayerCooldownTime) {
-                            redPlayer.shoot();
+                            redPlayer.shoot(redPlayerView);
                             redPlayerLastAttack = time;
                         }
                     }
@@ -178,13 +192,13 @@ public class GameProcess {
                 if (!greenPlayer.isDead) {
                     if (isUpPressed && greenPlayerView.getY() > 0) greenPlayer.jump();
                     if (isLeftPressed && greenPlayerView.getX() > 0) {
-                        greenPlayer.move(-Player.playerSpeedX, 0);
+                        greenPlayer.move(-Player.playerSpeedX, 0, greenPlayerView);
                         greenPlayerView.setViewport(new Rectangle2D(0, 195, 180, 195));
                         greenPlayer.isMovingLeft = true;
                         greenPlayer.isMovingRight = false;
                     }
                     if (isRightPressed && greenPlayerView.getX() < 1240) {
-                        greenPlayer.move(Player.playerSpeedX, 0);
+                        greenPlayer.move(Player.playerSpeedX, 0, greenPlayerView);
                         greenPlayerView.setViewport(new Rectangle2D(0, 0, 180, 195));
                         greenPlayer.isMovingRight = true;
                         greenPlayer.isMovingLeft = false;
@@ -196,7 +210,7 @@ public class GameProcess {
 
                         long time = System.currentTimeMillis();
                         if (time > greenPlayerLastAttack + greenPlayerCooldownTime) {
-                            greenPlayer.shoot();
+                            greenPlayer.shoot(greenPlayerView);
                             greenPlayerLastAttack = time;
                         }
                     }
@@ -210,8 +224,11 @@ public class GameProcess {
                 redPlayer.fall();
                 greenPlayer.fall();
 
-                redPlayer.move(0, redPlayer.playerSpeedY);
-                greenPlayer.move(0, greenPlayer.playerSpeedY);
+                redPlayer.move(0, redPlayer.playerSpeedY, redPlayerView);
+                greenPlayer.move(0, greenPlayer.playerSpeedY, greenPlayerView);
+
+                showHealthBar(redPlayer, redPlayerHealthView);
+                showHealthBar(greenPlayer, greenPlayerHealthView);
 
                 redPlayer.checkDamage();
                 greenPlayer.checkDamage();
@@ -224,10 +241,10 @@ public class GameProcess {
                 checkBulletCollisionWithObstacles(redPlayerBullets);
                 checkBulletCollisionWithObstacles(greenPlayerBullets);
 
-                checkBulletCollisionWithPlayer(redPlayerBullets, redPlayer);
-                checkBulletCollisionWithPlayer(redPlayerBullets, greenPlayer);
-                checkBulletCollisionWithPlayer(greenPlayerBullets, greenPlayer);
-                checkBulletCollisionWithPlayer(greenPlayerBullets, redPlayer);
+                checkBulletCollisionWithPlayer(redPlayerBullets, redPlayer, redPlayerView);
+                checkBulletCollisionWithPlayer(redPlayerBullets, greenPlayer, greenPlayerView);
+                checkBulletCollisionWithPlayer(greenPlayerBullets, greenPlayer, greenPlayerView);
+                checkBulletCollisionWithPlayer(greenPlayerBullets, redPlayer, redPlayerView);
 
             }
         };
@@ -265,17 +282,40 @@ public class GameProcess {
         }
     }
 
-    public void checkBulletCollisionWithPlayer(ArrayList<Bullet> bullets, Player player) {
+    public void checkBulletCollisionWithPlayer(ArrayList<Bullet> bullets, Player player, ImageView playerView) {
         for (Bullet bullet : bullets) {
             for (int i = 0; i < Math.abs(bullet.speed); i++) {
                 if (!bullet.isHit) {
-                    if (bullet.getBulletView().getBoundsInParent().intersects(player.getPlayerView().getBoundsInParent())) {
+                    if (bullet.getBulletView().getBoundsInParent().intersects(playerView.getBoundsInParent())) {
                         player.isHit = true;
                         bullet.isHit = true;
                         bullet.getBulletView().setVisible(false);
                     }
                 }
             }
+        }
+    }
+
+    public void showHealthBar(Player player, ImageView playerHealthView) {
+        switch (player.health) {
+            case 5:
+                playerHealthView.setViewport(new Rectangle2D(0,0, 244, 34));
+                break;
+            case 4:
+                playerHealthView.setViewport(new Rectangle2D(0,34, 244, 34));
+                break;
+            case 3:
+                playerHealthView.setViewport(new Rectangle2D(0,68, 244, 34));
+                break;
+            case 2:
+                playerHealthView.setViewport(new Rectangle2D(0,102, 244, 34));
+                break;
+            case 1:
+                playerHealthView.setViewport(new Rectangle2D(0,136, 244, 34));
+                break;
+            case 0:
+                playerHealthView.setViewport(new Rectangle2D(0,170, 244, 34));
+                break;
         }
     }
 }

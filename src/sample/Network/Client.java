@@ -7,7 +7,7 @@ public class Client {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-            try(Socket clientSocket = new Socket("localhost", MultiThreadServer.SERVER_PORT)) {
+            try(Socket clientSocket = new Socket("localhost", Server.SERVER_PORT)) {
 
                 //System.in позволяет считывать ввод данных с клавиатуры
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -16,7 +16,7 @@ public class Client {
                 DataInputStream input = new DataInputStream(clientSocket.getInputStream());
                 DataOutputStream output = new DataOutputStream(clientSocket.getOutputStream());
 
-                System.out.println("Клиент присоединился к серверу. Порт: " + MultiThreadServer.SERVER_PORT);
+                System.out.println("Клиент присоединился к серверу. Порт: " + Server.SERVER_PORT);
 
                 //Если канал живой (часть отвечающая за запись данных жива) - отсылаем данные на сервер
                 while (!clientSocket.isOutputShutdown()) {

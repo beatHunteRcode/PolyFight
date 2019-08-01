@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.geometry.*;
 
 
-public class ConfirmBox {
+public class ConfirmWindow {
 
     private static boolean answer;
 
@@ -15,10 +15,10 @@ public class ConfirmBox {
 
         Stage window = new Stage();
 
-        //с помощью этого мы даем окну свойства AlertBox
-        //т.е когда откроется AlertBox, мы не сможем взаимодействовать со всеми
-        //другими окнами, пока не разберемся с AlertBox
-        //Modality.APPLICATION_MODAL как раз таки наделяет окно эти свойством
+        //с помощью этого мы даем окну свойства ConfirmBox
+        //т.е когда откроется ConfirmBox, мы не сможем взаимодействовать со всеми
+        //другими окнами, пока не разберемся с ConfirmBox
+        //Modality.APPLICATION_MODAL как раз таки наделяет окно c этиv свойством
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setTitle(title);

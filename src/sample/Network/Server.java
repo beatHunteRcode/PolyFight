@@ -9,8 +9,9 @@ public class Server {
     public static final int SERVER_PORT = 1488;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void run() throws IOException, InterruptedException {
         try(ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) { //открываем сокет на порту 1488
+            System.out.println("Сервер запущен. Ожидание подключения...");
             Socket clientSocket = serverSocket.accept();                 //создаём принимающий клиентский сокет
             System.out.println("Клиент подключился");                   //подтверждаем подключение
 

@@ -15,10 +15,10 @@ public class ConfirmWindow {
 
         Stage window = new Stage();
 
-        //с помощью этого мы даем окну свойства ConfirmBox
-        //т.е когда откроется ConfirmBox, мы не сможем взаимодействовать со всеми
-        //другими окнами, пока не разберемся с ConfirmBox
-        //Modality.APPLICATION_MODAL как раз таки наделяет окно c этиv свойством
+        //с помощью этого мы даем окну свойства AlertBox
+        //т.е когда откроется ConfirmWindow, мы не сможем взаимодействовать со всеми
+        //другими окнами, пока не разберемся с ConfirmWindow
+        //Modality.APPLICATION_MODAL как раз таки наделяет окно c этим свойством
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setTitle(title);
@@ -40,10 +40,10 @@ public class ConfirmWindow {
             window.close();
         });
 
-        Label label = new Label(message);
-        StackPane.setAlignment(label, Pos.TOP_CENTER);
+        Label textLabel = new Label(message);
+        StackPane.setAlignment(textLabel, Pos.TOP_CENTER);
 
-        StackPane layout = new StackPane(label, yesButton, noButton);
+        StackPane layout = new StackPane(textLabel, yesButton, noButton);
         Scene scene = new Scene(layout, 300, 300);
         window.setScene(scene);
         window.showAndWait();

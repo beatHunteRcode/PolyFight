@@ -1,16 +1,38 @@
 package sample.Network;
 
+import javafx.application.Platform;
+import sample.AlertWindow;
+
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 public class Server {
 
-    public static final int SERVER_PORT = 1488;
+    public static final int SERVER_PORT = 1337;
 
 
     public static void run() throws IOException, InterruptedException {
         try(ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) { //открываем сокет на порту 1488
+
+            //вывод окна с информацией об IP и Port сервера
+            Runnable ipAndPortWindowShow = () -> {
+                try {
+                    AlertWindow ipAndPortInfoWindow = new AlertWindow();
+                    ipAndPortInfoWindow.display(
+                            "IP & Port Info",
+                            "Your IP: " + Inet4Address.getLocalHost().getHostAddress() + "\n" +
+                                    "Your Port: 1337",
+                            200,
+                            200,
+                            200,
+                            200
+                    );
+                } catch (UnknownHostException exception) {
+                    exception.printStackTrace();
+                }
+            };
+            Platform.runLater(ipAndPortWindowShow);
+
             System.out.println("Сервер запущен. Ожидание подключения...");
             Socket clientSocket = serverSocket.accept();                 //создаём принимающий клиентский сокет
             System.out.println("Клиент подключился");                   //подтверждаем подключение
@@ -52,7 +74,6 @@ public class Server {
             input.close();
             output.close();
             System.out.println("Все соединения и каналы успешно закрыты!");
-
         }
     }
 }

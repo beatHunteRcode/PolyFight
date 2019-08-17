@@ -5,9 +5,11 @@ import java.net.Socket;
 
 public class Client {
 
+    public static String SERVER_IP; //IP сервера, к которому будут присоединяться
+    public static int SERVER_PORT;  //порт сервера, к которому будут присоединяться
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-            try(Socket clientSocket = new Socket("localhost", Server.SERVER_PORT)) {
+    public void connect() throws IOException, InterruptedException {
+            try(Socket clientSocket = new Socket(SERVER_IP, SERVER_PORT)) {
 
                 //System.in позволяет считывать ввод данных с клавиатуры
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));

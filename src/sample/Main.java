@@ -14,14 +14,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
 import javafx.stage.Stage;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import sample.Network.Client;
 import sample.Network.Server;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.BindException;
-import java.net.Inet4Address;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 
 public class Main extends Application {
 
-    public static Stage window = new Stage();
+    public static Stage mainWindow = new Stage();
     private Button ruleButton = new Button("Rules");
     private Button playButton = new Button("PLAY!!!");
     private Button exitButton = new Button("Exit");
@@ -40,11 +39,29 @@ public class Main extends Application {
     public static RadioButton flyingIslandRadioButton = new RadioButton("Flying Island");
     public static RadioButton caveRadioButton = new RadioButton("Cave");
     public static RadioButton moonRadioButton = new RadioButton("Moon");
+    public static RadioButton selectRedPlayerRadioButton = new RadioButton("Red Player");
+    public static RadioButton selectGreenPlayerRadioButton = new RadioButton("Green Player");
     private ToggleGroup chooseLevel = new ToggleGroup();
+    private ToggleGroup choosePlayer = new ToggleGroup();
 
+    private ImageView redPlayerView;
+    private ImageView greenPlayerView;
+    private ImageView redPlayerHealthView;
+    private ImageView greenPlayerHealthView;
+    private ImageView redPlayerDeathScreenView;
+    private ImageView greenPlayerDeathScreenView;
+    private ImageView skyView;
+    private ImageView caveView;
+    private ImageView earthView;
+
+    private ImagePattern groundPattern;
+    private ImagePattern boxPattern;
+    private ImagePattern stonePattern;
+    private ImagePattern moonGroundPattern;
 
     public static Scene mainMenu;
     public static Scene playScene;
+    public static Scene playerSelectingScene;
     private Scene ruleScene;
     public static Pane playLayout = new Pane();
 
@@ -66,7 +83,7 @@ public class Main extends Application {
     }
 
     private void mainMenuInitialize(Stage primaryStage) throws IOException {
-        window = primaryStage;
+        mainWindow = primaryStage;
         /* .setOnCloseRequest() обрабатывает случай, когда юзер закрывает
            приложение через красный виндоусовский крестик в правом перхнем углу окна
            перед тем как окно закроется. произойдет то, что будет в скобках
@@ -75,16 +92,16 @@ public class Main extends Application {
            event.consume()
            Этот метод останавливает выполнение метода .setOnCloseRequest. Он как бы "поглощает" метод в котором он вызван
            Тем самым закроется окно или нет уже будет зависеть от другого метода*/
-        window.setOnCloseRequest(event -> {
+        mainWindow.setOnCloseRequest(event -> {
             event.consume();
             closingProgram();
         });
 
 
-        window.setMinWidth(1280);
-        window.setMinHeight(720);
-        window.setMaxWidth(1280);
-        window.setMaxHeight(720);
+        mainWindow.setMinWidth(1280);
+        mainWindow.setMinHeight(720);
+        mainWindow.setMaxWidth(1280);
+        mainWindow.setMaxHeight(720);
 
 
         //-------------------------------Images-----------------------------------------------
@@ -114,18 +131,18 @@ public class Main extends Application {
         //------------------------------------------------------------------------------------
 
         //--------------------------------Image Views / Image Patterns------------------------
-        ImageView redPlayerView = new ImageView(redPlayerImage);
-        ImageView greenPlayerView = new ImageView(greenPlayerImage);
+        redPlayerView = new ImageView(redPlayerImage);
+        greenPlayerView = new ImageView(greenPlayerImage);
 
-        ImageView skyView = new ImageView(skyImage);
-        ImageView caveView = new ImageView(caveImage);
-        ImageView earthView = new ImageView(earthImage);
+        skyView = new ImageView(skyImage);
+        caveView = new ImageView(caveImage);
+        earthView = new ImageView(earthImage);
 
-        ImageView redPlayerHealthView = new ImageView(redPlayerHealthImage);
-        ImageView greenPlayerHealthView = new ImageView(greenPlayerHealthImage);
+        redPlayerHealthView = new ImageView(redPlayerHealthImage);
+        greenPlayerHealthView = new ImageView(greenPlayerHealthImage);
 
-        ImageView redPlayerDeathScreenView = new ImageView(redPlayerDeathScreenImage);
-        ImageView greenPlayerDeathScreenView = new ImageView(greenPayerDeathScreenImage);
+        redPlayerDeathScreenView = new ImageView(redPlayerDeathScreenImage);
+        greenPlayerDeathScreenView = new ImageView(greenPayerDeathScreenImage);
 
         ImageView flyingIslandLevelView = new ImageView(flyingIslandLevelImage);
         flyingIslandLevelView.setFitWidth(levelPreviewWidth);
@@ -137,11 +154,10 @@ public class Main extends Application {
         moonLevelView.setFitWidth(levelPreviewWidth);
         moonLevelView.setFitHeight(levelPreviewHeight);
 
-
-        ImagePattern groundPattern = new ImagePattern(groundImage);
-        ImagePattern boxPattern = new ImagePattern(boxImage);
-        ImagePattern stonePattern = new ImagePattern(stoneImage);
-        ImagePattern moonGroundPattern = new ImagePattern(moonGroundImage);
+        groundPattern = new ImagePattern(groundImage);
+        boxPattern = new ImagePattern(boxImage);
+        stonePattern = new ImagePattern(stoneImage);
+        moonGroundPattern = new ImagePattern(moonGroundImage);
 
         ImageView rulesView = new ImageView(rulesImage);
         //------------------------------------------------------------------------------------
@@ -190,15 +206,15 @@ public class Main extends Application {
         StackPane ruleLayout = new StackPane(backButton, rulesView);
 
         mainMenu = new Scene(mainMenuLayout, 1280, 720);
-        primaryStage.setScene(mainMenu);
-        primaryStage.show();
+        mainWindow.setScene(mainMenu);
+        mainWindow.show();
 
         playScene = new Scene(playLayout, 1280, 720);
         ruleScene = new Scene(ruleLayout, 1280, 720);
 
-        ruleButton.setOnAction(event -> primaryStage.setScene(ruleScene));
+        ruleButton.setOnAction(event -> mainWindow.setScene(ruleScene));
         playButton.setOnAction(event -> {
-            primaryStage.setScene(playScene);
+            mainWindow.setScene(playScene);
             GameProcess gameProcess = new GameProcess(
                     playScene,
                     redPlayerView,
@@ -219,23 +235,30 @@ public class Main extends Application {
         });
         exitButton.setOnAction(event -> closingProgram());
         backButton.setOnAction(event -> primaryStage.setScene(mainMenu));
-        connectToServerButton.setOnAction(event -> connect());
+        connectToServerButton.setOnAction(event -> {
+            connectingWindowShow();
+            Thread clientConnectingThread = new Thread(this::clientConnecting);
+            clientConnectingThread.start();
+        });
         createServerButton.setOnAction(event -> {
-            //Выделяем отдельный поток для запуска сервера
-            Thread serverRunningThread = new Thread(this::serverStart); //лямбда Runnable заменена на обращение к методу класса
-            serverRunningThread.start();
+            try {
+                createSelectingPlayerScene();
+            }
+            catch (FileNotFoundException exception) {
+                exception.printStackTrace();
+            }
         });
     }
 
     private void closingProgram() {
         boolean answer = ConfirmWindow.display("Closing", "Are you sure you want to quit?");
         if (answer) {
-            window.close();
+            mainWindow.close();
             System.exit(0);
         }
     }
 
-    private void connect() {
+    private void connectingWindowShow() {
         try {
             IPEnteringWindow ipEnteringWindow = new IPEnteringWindow();
             String[] ipAndPortArray = new String[2];
@@ -243,8 +266,6 @@ public class Main extends Application {
             if (ipAndPortArray.length < 2) return;
             Client.SERVER_IP = ipAndPortArray[0];
             Client.SERVER_PORT = Integer.parseInt(ipAndPortArray[1]);
-            Client client = new Client();
-            client.connect();
         }
         catch (NumberFormatException exception) {
             AlertWindow alertWindow = new AlertWindow();
@@ -255,6 +276,13 @@ public class Main extends Application {
                     100,
                     200,
                     100);
+        }
+    }
+
+    public void clientConnecting() {
+        try {
+            Client client = new Client();
+            client.connect();
         }
         catch (SocketException | UnknownHostException exception) {
             AlertWindow alertWindow = new AlertWindow();
@@ -270,7 +298,6 @@ public class Main extends Application {
             exception.printStackTrace();
         }
     }
-
     private void createLevel(ImageView background, ImagePattern groundPattern, ImagePattern boxPattern, String[] level) {
         playLayout.getChildren().add(background);
         for (int i = 0; i < level.length; i++) {
@@ -324,6 +351,70 @@ public class Main extends Application {
             }
     }
 
+    public void createSelectingPlayerScene() throws FileNotFoundException {
+        Button playButton = new Button("PLAY!!!");
+        Button backButton = new Button("Back");
+        ImageView selectRedPlayerImageView = new ImageView(new Image(new FileInputStream("src/images/redPlayer.png")));
+        ImageView selectGreenPlayerImageView = new ImageView(new Image(new FileInputStream("src/images/greenPlayer.png")));
+        selectRedPlayerImageView.setViewport(new Rectangle2D(0, 0, 190, 195));
+        selectRedPlayerImageView.setFitWidth(Player.playerWidth + 50);
+        selectRedPlayerImageView.setFitHeight(Player.playerHeight + 50);
+        selectGreenPlayerImageView.setViewport(new Rectangle2D(0, 195, 180, 195));
+        selectGreenPlayerImageView.setFitWidth(Player.playerWidth + 50);
+        selectGreenPlayerImageView.setFitHeight(Player.playerHeight + 50);
+        StackPane playerSelectingPane = new StackPane(
+                selectRedPlayerRadioButton,
+                selectGreenPlayerRadioButton,
+                selectRedPlayerImageView,
+                selectGreenPlayerImageView,
+                playButton,
+                backButton
+        );
 
+        StackPane.setMargin(selectRedPlayerImageView, new Insets(0,500,200,0));
+        StackPane.setMargin(selectGreenPlayerImageView, new Insets(0,0,200,500));
+        StackPane.setMargin(selectRedPlayerRadioButton, new Insets(0,500,0,0));
+        StackPane.setMargin(selectGreenPlayerRadioButton, new Insets(0,0,0,500));
+        StackPane.setMargin(playButton, new Insets(100,0,0,0));
+        StackPane.setMargin(backButton, new Insets(400,0,0,0));
+        selectRedPlayerRadioButton.setToggleGroup(choosePlayer);
+        selectGreenPlayerRadioButton.setToggleGroup(choosePlayer);
+        selectRedPlayerRadioButton.setSelected(true);
+        Scene playerSelectingScene = new Scene(playerSelectingPane, 1280, 720);
+        mainWindow.setScene(playerSelectingScene);
 
+        playButton.setOnAction(event -> {
+            //Выделяем отдельный поток для запуска сервера
+            Thread serverRunningThread = new Thread(this::serverStart); //лямбда Runnable заменена на обращение к методу класса
+            serverRunningThread.start();
+
+            if (selectRedPlayerRadioButton.isSelected()) {
+                playLayout.getChildren().addAll(redPlayerView, redPlayerHealthView);
+                MultiplayerGameProcess gameProcess = new MultiplayerGameProcess(
+                        playScene,
+                        redPlayerView,
+                        redPlayerHealthView,
+                        redPlayerDeathScreenView
+                );
+                gameProcess.start();
+            }
+            if (selectGreenPlayerRadioButton.isSelected()) {
+                MultiplayerGameProcess gameProcess = new MultiplayerGameProcess(
+                        playScene,
+                        greenPlayerView,
+                        greenPlayerHealthView,
+                        greenPlayerDeathScreenView
+                );
+                gameProcess.start();
+                playLayout.getChildren().addAll(greenPlayerView, greenPlayerHealthView);
+            }
+
+            if (flyingIslandRadioButton.isSelected()) createLevel(skyView, groundPattern, boxPattern, Levels.LEVEL01_FlyingIsland);
+            if (caveRadioButton.isSelected()) createLevel(caveView, stonePattern, stonePattern, Levels.LEVEL02_Cave);
+            if (moonRadioButton.isSelected()) createLevel(earthView, moonGroundPattern, moonGroundPattern, Levels.LEVEL03_Moon);
+
+            mainWindow.setScene(playScene);
+        });
+        backButton.setOnAction(event -> mainWindow.setScene(mainMenu));
+    }
 }

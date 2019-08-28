@@ -102,7 +102,7 @@ public class GameProcess {
             if (keyCode.equals(KeyCode.ESCAPE)) {
                 Main.playLayout.getChildren().clear();
                 Main.OBSTACLES.clear();
-                Main.window.setScene(Main.mainMenu);
+                Main.mainWindow.setScene(Main.mainMenu);
                 animationTimer.stop();
             }
 
@@ -252,7 +252,7 @@ public class GameProcess {
     }
 
 
-    public void flyOfBullets(ArrayList<Bullet> bullets, Player player) {
+    public static void flyOfBullets(ArrayList<Bullet> bullets, Player player) {
         if (!bullets.isEmpty()) {
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
@@ -267,7 +267,7 @@ public class GameProcess {
     }
 
 
-    public void checkBulletCollisionWithObstacles(ArrayList<Bullet> bullets) {
+    public static void checkBulletCollisionWithObstacles(ArrayList<Bullet> bullets) {
         if (!bullets.isEmpty()) {
             for (int i = 0; i < bullets.size(); i++) {
                 Bullet bullet = bullets.get(i);
@@ -282,7 +282,7 @@ public class GameProcess {
         }
     }
 
-    public void checkBulletCollisionWithPlayer(ArrayList<Bullet> bullets, Player player, ImageView playerView) {
+    public static void checkBulletCollisionWithPlayer(ArrayList<Bullet> bullets, Player player, ImageView playerView) {
         for (Bullet bullet : bullets) {
             for (int i = 0; i < Math.abs(bullet.speed); i++) {
                 if (!bullet.isHit) {
@@ -296,7 +296,7 @@ public class GameProcess {
         }
     }
 
-    public void showHealthBar(Player player, ImageView playerHealthView) {
+    public static void showHealthBar(Player player, ImageView playerHealthView) {
         switch (player.health) {
             case 5:
                 playerHealthView.setViewport(new Rectangle2D(0,0, 244, 34));

@@ -254,7 +254,13 @@ public class Main extends Application {
     }
 
     private void closingProgram() {
-        boolean answer = ConfirmWindow.display("Closing", "Are you sure you want to quit?");
+        boolean answer = ConfirmWindow.display(
+                "Closing",
+                "Are you sure you want to quit?",
+                300,
+                200,
+                300,
+                200);
         if (answer) {
             mainWindow.close();
             System.exit(0);
@@ -293,10 +299,10 @@ public class Main extends Application {
                 alertWindow.display(
                         "Error",
                         "Server not found",
+                        300,
                         200,
-                        100,
-                        200,
-                        100);
+                        300,
+                        200);
             };
             Platform.runLater(alertWindowShow);
         }
@@ -346,10 +352,10 @@ public class Main extends Application {
                     alertWindow.display(
                             "Error",
                             "Server has already created!",
+                            300,
                             200,
-                            100,
-                            200,
-                            100);
+                            300,
+                            200);
                 };
                 Platform.runLater(serverCreatedWindowShow);
             }

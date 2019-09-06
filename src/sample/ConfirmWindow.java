@@ -11,7 +11,14 @@ public class ConfirmWindow {
 
     private static boolean answer;
 
-    public static boolean display(String title, String message) {
+    public static boolean display(
+            String title,
+            String message,
+            int windowMinWidth,
+            int windowMinHeight,
+            int windowMaxWidth,
+            int windowMaxHeight
+    ) {
 
         Stage window = new Stage();
 
@@ -22,10 +29,10 @@ public class ConfirmWindow {
         window.initModality(Modality.APPLICATION_MODAL);
 
         window.setTitle(title);
-        window.setMaxWidth(200);
-        window.setMaxHeight(100);
-        window.setMinWidth(200);
-        window.setMinHeight(100);
+        window.setMaxWidth(windowMaxWidth);
+        window.setMaxHeight(windowMaxHeight);
+        window.setMinWidth(windowMinWidth);
+        window.setMinHeight(windowMinHeight);
 
         Button yesButton = new Button("Yes");
         Button noButton = new Button("No");

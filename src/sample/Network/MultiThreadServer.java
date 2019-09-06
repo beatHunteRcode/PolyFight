@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class MultiThreadServer {
 
-    public static final int SERVER_PORT = 1337;
+    public static final int SERVER_PORT = 1488;
     //устанавливаем кол-во клиентов, которые смогут подключиться к сокету
     static ExecutorService executorServiceForClient = Executors.newFixedThreadPool(2);
 

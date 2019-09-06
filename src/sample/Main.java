@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
@@ -248,6 +249,8 @@ public class Main extends Application {
                 exception.printStackTrace();
             }
         });
+
+
     }
 
     private void closingProgram() {
@@ -285,15 +288,19 @@ public class Main extends Application {
             client.connect();
         }
         catch (SocketException | UnknownHostException exception) {
-            AlertWindow alertWindow = new AlertWindow();
-            alertWindow.display(
-                    "Error",
-                    "Server not found",
-                    200,
-                    100,
-                    200,
-                    100);
+            Runnable alertWindowShow = () -> {
+                AlertWindow alertWindow = new AlertWindow();
+                alertWindow.display(
+                        "Error",
+                        "Server not found",
+                        200,
+                        100,
+                        200,
+                        100);
+            };
+            Platform.runLater(alertWindowShow);
         }
+
         catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
         }
@@ -390,22 +397,24 @@ public class Main extends Application {
 
             if (selectRedPlayerRadioButton.isSelected()) {
                 playLayout.getChildren().addAll(redPlayerView, redPlayerHealthView);
-                MultiplayerGameProcess gameProcess = new MultiplayerGameProcess(
+                MultiplayerGameProcess multiplayerGameProcess = new MultiplayerGameProcess(
                         playScene,
                         redPlayerView,
                         redPlayerHealthView,
-                        redPlayerDeathScreenView
+                        redPlayerDeathScreenView,
+                        serverRunningThread
                 );
-                gameProcess.start();
+                multiplayerGameProcess.start();
             }
             if (selectGreenPlayerRadioButton.isSelected()) {
-                MultiplayerGameProcess gameProcess = new MultiplayerGameProcess(
+                MultiplayerGameProcess multiplayerGameProcess = new MultiplayerGameProcess(
                         playScene,
                         greenPlayerView,
                         greenPlayerHealthView,
-                        greenPlayerDeathScreenView
+                        greenPlayerDeathScreenView,
+                        serverRunningThread
                 );
-                gameProcess.start();
+                multiplayerGameProcess.start();
                 playLayout.getChildren().addAll(greenPlayerView, greenPlayerHealthView);
             }
 

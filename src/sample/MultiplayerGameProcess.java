@@ -5,10 +5,13 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import sample.Network.Server;
 
 import java.util.ArrayList;
 
 public class MultiplayerGameProcess {
+
+    Thread serverRunningThread;
 
     private boolean isWPressed = false;
     private boolean isAPressed = false;
@@ -26,13 +29,15 @@ public class MultiplayerGameProcess {
 
     AnimationTimer animationTimer;
 
-    public MultiplayerGameProcess(Scene playScene, ImageView playerView,
-                       ImageView playerHealthView,
-                       ImageView playerDeathScreenView) {
+    public MultiplayerGameProcess(  Scene playScene, ImageView playerView,
+                                    ImageView playerHealthView,
+                                    ImageView playerDeathScreenView,
+                                    Thread serverRunningThread  ) {
         this.playScene = playScene;
         this.playerView = playerView;
         this.playerHealthView = playerHealthView;
         this.playerDeathScreenView = playerDeathScreenView;
+        this.serverRunningThread = serverRunningThread;
     }
 
     public void start() {
